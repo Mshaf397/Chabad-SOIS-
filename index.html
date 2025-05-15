@@ -23,8 +23,9 @@
 
     <section class="featured-event">
         <div class="event-text">
-            <h2>Featured Event: Shabbat Dinner</h2>
-            <p>Join us this Friday night for a special Shabbat dinner. All are welcome!</p>
+            <h2>Featured Event: Lag Ba'Omer Concert</h2>
+            <p>Join us this Friday afternoon for a special concert in honor of Lag Ba'Omer. All are welcome!</p>
+            <p>Concert is from 3:30-5:00 PM on Friday, May 16th.</p>
         </div>
     </section>
 
@@ -36,9 +37,9 @@
     <section class="events-preview">
         <h2>Upcoming Events</h2>
         <ul>
-            <li>Shabbat Dinner - May 20th</li>
-            <li>Torah Study - May 22nd</li>
-            <li>Community BBQ - June 5th</li>
+            <li>Lag Ba'Omer concert - May 16th</li>
+            <li>Shabbos Farbrengen- May 17th</li>
+            <li>Shavuos Learning - June 1st</li>
         </ul>
     </section>
 
@@ -51,59 +52,7 @@
         </ul>
     </section>
     
-    <section class="jewish-hstory">
-  <h2>Today in Jewish History</h2>
-  <div id="jewish-history-content">Loading...</div>
-</section>
 
-<script>
-  async function fetchJewishHistory() {
-    try {
-      const response = await fetch("jewish-history.json");
-      const data = await response.json();
-      const today = new Date().toISOString().slice(5, 10); // MM-DD format
-
-      const historyToday = data[today] || "No events recorded for today.";
-      document.getElementById("jewish-history-content").innerHTML = historyToday;
-    } catch (error) {
-      console.error("Error loading Jewish history:", error);
-      document.getElementById("jewish-history-content").innerHTML = "Unable to load today's events.";
-    }
-  }
-
-  fetchJewishHistory();
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/kosher-date@0.1.6/dist/hebcal.min.js"></script>
-
-<script>
-  async function fetchJewishHistory() {
-    try {
-      const response = await fetch("jewish-history.json");
-      const data = await response.json();
-      const today = new Date();
-      const hebrewDate = new Hebcal.HDate(today);
-      const hebrewDay = hebrewDate.getDate();
-      const hebrewMonth = hebrewDate.getMonthName();
-      const hebrewYear = hebrewDate.getYear();
-      const formattedDate = `${hebrewDay} ${hebrewMonth} ${hebrewYear}`;
-
-      const key = `${hebrewDay}-${hebrewMonth}`;
-      const historyToday = data[key] || "No events recorded for today.";
-      const content = `<p><strong>${formattedDate}:</strong> ${historyToday}</p>`;
-
-      document.getElementById("jewish-history-content").innerHTML = content;
-      document.getElementById("jewish-history-page").innerHTML = content;
-
-    } catch (error) {
-      console.error("Error loading Jewish history:", error);
-      document.getElementById("jewish-history-content").innerHTML = "Unable to load today's events.";
-      document.getElementById("jewish-history-page").innerHTML = "Unable to load today's events.";
-    }
-  }
-
-  fetchJewishHistory();
-</script>
 
     <footer>
         <p>3151 Stoney Street, Mohegan Lake, NY 10547</p>
