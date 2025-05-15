@@ -45,6 +45,37 @@
   fetchJewishHistoryPage();
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/kosher-date@0.1.6/dist/hebcal.min.js"></script>
+
+<script>
+  async function fetchJewishHistory() {
+    try {
+      const response = await fetch("jewish-history.json");
+      const data = await response.json();
+      const today = new Date();
+      const hebrewDate = new Hebcal.HDate(today);
+      const hebrewDay = hebrewDate.getDate();
+      const hebrewMonth = hebrewDate.getMonthName();
+      const hebrewYear = hebrewDate.getYear();
+      const formattedDate = `${hebrewDay} ${hebrewMonth} ${hebrewYear}`;
+
+      const key = `${hebrewDay}-${hebrewMonth}`;
+      const historyToday = data[key] || "No events recorded for today.";
+      const content = `<p><strong>${formattedDate}:</strong> ${historyToday}</p>`;
+
+      document.getElementById("jewish-history-content").innerHTML = content;
+      document.getElementById("jewish-history-page").innerHTML = content;
+
+    } catch (error) {
+      console.error("Error loading Jewish history:", error);
+      document.getElementById("jewish-history-content").innerHTML = "Unable to load today's events.";
+      document.getElementById("jewish-history-page").innerHTML = "Unable to load today's events.";
+    }
+  }
+
+  fetchJewishHistory();
+</script>
+
 <footer>
   <p>3151 Stoney Street, Mohegan Lake, NY 10547</p>
   <p>Text only: 857-271-1212</p>
