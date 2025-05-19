@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fun Extras - Chabad SOIS</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .restricted {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background-color: #f0f8ff;
+      border-left: 5px solid #002366;
+      color: #002366;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Chabad SOIS</h1>
+</header>
+
+<main>
+  <section class="restricted">
+    <h2>Fun Extras</h2>
+    <p>Welcome to the fun section! Stay tuned for more content!</p>
+  </section>
+</main>
+
+<footer>
+  <p>3151 Stoney Street, Mohegan Lake, NY 10547</p>
+  <p>Text only: 857-271-1212</p>
+  <p>Email: <a href="mailto:askchabadsois@gmail.com">askchabadsois@gmail.com</a></p>
+</footer>
+
+<script>
+  // Check if the user arrived from the homepage
+  if (!document.referrer.includes("index.html")) {
+    document.body.innerHTML = "<h1>Access Denied</h1><p>You must access this page from the homepage.</p>";
+  }
+</script>
+
+</body>
+</html>
