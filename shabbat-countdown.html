@@ -1,160 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Shabbat Countdown - Chabad SOIS</title>
-  <link rel="stylesheet" href="styles.css" />
-  <style>
-    body {
-      max-width: 600px;
-      margin: 2rem auto;
-      font-family: Arial, sans-serif;
-      color: #002366;
-      background-color: #f0f8ff;
-      padding: 1rem;
-      text-align: center;
-    }
-    h1 {
-      margin-bottom: 1rem;
-    }
-    select, button {
-      font-size: 1rem;
-      padding: 0.5rem;
-      margin: 1rem 0;
-    }
-    #countdown {
-      font-size: 2rem;
-      font-weight: bold;
-      margin-top: 1rem;
-    }
-    #error {
-      color: red;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Shabbat Countdown</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #0038b8; /* Israeli flag blue */
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    padding: 1em;
+  }
+  h1 {
+    margin-bottom: 0.5em;
+  }
+  select {
+    font-size: 1em;
+    margin-bottom: 1em;
+    padding: 0.3em;
+  }
+  #countdown {
+    font-size: 2em;
+    margin-top: 0.5em;
+  }
+  #error {
+    color: #ffcccc;
+    margin-top: 1em;
+  }
+</style>
 </head>
 <body>
-
-<header>
   <h1>Shabbat Countdown</h1>
-  <p>Countdown to candle lighting time based on your location.</p>
-</header>
-
-<main>
-  <label for="offset">Select candle lighting offset:</label>
+  <label for="offset">Count down to:</label>
   <select id="offset">
     <option value="18">18 minutes before sundown</option>
     <option value="40">40 minutes before sundown</option>
     <option value="plag">Plag HaMincha</option>
   </select>
-
-  <div id="countdown">Calculating...</div>
+  <div id="countdown">Loading...</div>
   <div id="error"></div>
-</main>
-
-<footer>
-  <p>3151 Stoney Street, Mohegan Lake, NY 10547</p>
-  <p>Text only: 857-271-1212</p>
-  <p>Email: <a href="mailto:askchabadsois@gmail.com">askchabadsois@gmail.com</a></p>
-</footer>
 
 <script>
-  const countdownEl = document.getElementById('countdown');
-  const errorEl = document.getElementById('error');
-  const offsetSelect = document.getElementById('offset');
+const countdownEl = document.getElementById("countdown");
+const errorEl = document.getElementById("error");
+const offsetSelect = document.getElementById("offset");
 
-  // Helper: format time as HH:MM:SS
-  function formatTime(ms) {
-    if (ms < 0) return "Shabbat started!";
-    const totalSeconds = Math.floor(ms / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    return `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+// Utility to format milliseconds as HH:MM:SS
+function formatTime(ms) {
+  if (ms <= 0) return "0:00:00";
+  let totalSeconds = Math.floor(ms / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  totalSeconds %= 3600;
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds
+    .toString()
+    .padStart(2, "0")}`;
+}
+
+// Get next Friday date from given date
+function getNextFriday(date) {
+  const day = date.getDay();
+  let daysUntilFriday = (5 + 7 - day) % 7;
+  // If today is Friday, count as next Friday only if current time is after candle lighting (handled later)
+  if (daysUntilFriday === 0) daysUntilFriday = 0; // We'll check after fetching candle lighting
+  const nextFriday = new Date(date);
+  nextFriday.setHours(0, 0, 0, 0);
+  nextFriday.setDate(date.getDate() + daysUntilFriday);
+  return nextFriday;
+}
+
+// Calculate candle lighting time based on offset
+// sunrise and sunset are Date objects in UTC
+function getCandleLightingTime(sunrise, sunset, offset) {
+  // Convert sunset to local time for offset calculations
+  const sunsetLocal = new Date(sunset);
+
+  if (offset === "plag") {
+    // Plag HaMincha calculation:
+    // ((minutes of daylight*10.75/12)/60)+(sunrise time)
+    // minutes daylight = difference between sunset and sunrise in minutes
+    const minutesDaylight = (sunset - sunrise) / (1000 * 60);
+    const plagHours = (minutesDaylight * 10.75) / 12 / 60;
+    // plag time = sunrise + plagHours in ms
+    const plagTime = new Date(sunrise.getTime() + plagHours * 3600 * 1000);
+    return plagTime;
+  } else {
+    // offset is minutes before sunset
+    const offsetMinutes = parseInt(offset, 10);
+    return new Date(sunset.getTime() - offsetMinutes * 60000);
+  }
+}
+
+// Main countdown function
+async function initCountdown() {
+  errorEl.textContent = "";
+  countdownEl.textContent = "Calculating...";
+  if (!navigator.geolocation) {
+    errorEl.textContent = "Geolocation is not supported by your browser.";
+    countdownEl.textContent = "";
+    return;
   }
 
-  // Calculate Plag HaMincha based on sunrise, sunset
-  function calcPlag(sunrise, sunset) {
-    const daylightMs = sunset - sunrise;
-    const daylightMinutes = daylightMs / (1000 * 60);
-    const plagMinutes = daylightMinutes * 10.75 / 12;
-    return new Date(sunrise.getTime() + plagMinutes * 60 * 1000);
-  }
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
 
-  // Get today's sunset and sunrise using Geolocation and Sunrise-Sunset API
-  async function getSunTimes(lat, lng) {
-    const today = new Date().toISOString().slice(0,10);
-    try {
-      const response = await fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lng}&date=${today}&formatted=0`);
+    const now = new Date();
+    let nextFriday = getNextFriday(now);
+
+    // Fetch sun times for given date (returns UTC times)
+    async function fetchSunTimes(date) {
+      const dateStr = date.toISOString().slice(0, 10);
+      const response = await fetch(
+        `https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lng}&date=${dateStr}&formatted=0`
+      );
       const data = await response.json();
       if (data.status !== "OK") throw new Error("Sunrise-sunset API error");
       return {
         sunrise: new Date(data.results.sunrise),
-        sunset: new Date(data.results.sunset)
+        sunset: new Date(data.results.sunset),
       };
-    } catch(err) {
-      errorEl.textContent = "Error fetching sun times: " + err.message;
-      return null;
     }
-  }
 
-  function getCandleLightingTime(sunrise, sunset, offset) {
-    if (offset === 'plag') {
-      return calcPlag(sunrise, sunset);
-    } else {
-      const minutesBefore = parseInt(offset, 10);
-      return new Date(sunset.getTime() - minutesBefore * 60 * 1000);
-    }
-  }
+    try {
+      let sunTimes = await fetchSunTimes(nextFriday);
+      let candleLightingTime = getCandleLightingTime(
+        sunTimes.sunrise,
+        sunTimes.sunset,
+        offsetSelect.value
+      );
 
-  function updateCountdown(candleLightingTime) {
-    const now = new Date();
-    const diff = candleLightingTime - now;
-    countdownEl.textContent = formatTime(diff);
-  }
-
-  async function initCountdown() {
-    errorEl.textContent = "";
-    countdownEl.textContent = "Calculating...";
-    if (!navigator.geolocation) {
-      errorEl.textContent = "Geolocation is not supported by your browser.";
-      countdownEl.textContent = "";
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-
-      const sunTimes = await getSunTimes(lat, lng);
-      if (!sunTimes) {
-        countdownEl.textContent = "";
-        return;
-      }
-
-      let candleLightingTime = getCandleLightingTime(sunTimes.sunrise, sunTimes.sunset, offsetSelect.value);
-
-      // If candle lighting already passed today, get for next day
-      if (new Date() > candleLightingTime) {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const dateStr = tomorrow.toISOString().slice(0,10);
-        try {
-          const response = await fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lng}&date=${dateStr}&formatted=0`);
-          const data = await response.json();
-          if (data.status !== "OK") throw new Error("Sunrise-sunset API error");
-          const sunrise = new Date(data.results.sunrise);
-          const sunset = new Date(data.results.sunset);
-          candleLightingTime = getCandleLightingTime(sunrise, sunset, offsetSelect.value);
-        } catch(err) {
-          errorEl.textContent = "Error fetching sun times for tomorrow: " + err.message;
-          countdownEl.textContent = "";
-          return;
-        }
+      // If today is Friday but candle lighting time has passed, move to next Friday
+      if (
+        now > candleLightingTime &&
+        nextFriday.toDateString() === now.toDateString()
+      ) {
+        nextFriday.setDate(nextFriday.getDate() + 7);
+        sunTimes = await fetchSunTimes(nextFriday);
+        candleLightingTime = getCandleLightingTime(
+          sunTimes.sunrise,
+          sunTimes.sunset,
+          offsetSelect.value
+        );
       }
 
       function tick() {
-        updateCountdown(candleLightingTime);
-        if (new Date() >= candleLightingTime) {
+        const nowTick = new Date();
+        const diff = candleLightingTime - nowTick;
+        countdownEl.textContent = formatTime(diff);
+        if (diff <= 0) {
           countdownEl.textContent = "Shabbat started!";
           clearInterval(intervalId);
         }
@@ -162,15 +163,23 @@
 
       tick();
       const intervalId = setInterval(tick, 1000);
-    }, (err) => {
-      errorEl.textContent = "Geolocation error: " + err.message;
+
+      // Update countdown when offset changes
+      offsetSelect.onchange = async () => {
+        clearInterval(intervalId);
+        await initCountdown();
+      };
+    } catch (err) {
+      errorEl.textContent = "Error fetching sun times: " + err.message;
       countdownEl.textContent = "";
-    });
-  }
+    }
+  }, (err) => {
+    errorEl.textContent = "Geolocation error: " + err.message;
+    countdownEl.textContent = "";
+  });
+}
 
-  offsetSelect.addEventListener('change', initCountdown);
-  initCountdown();
+initCountdown();
 </script>
-
 </body>
 </html>
