@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find the Chametz - Hidden Object Game</title>
+  <style>
+    body {
+      background-color: #0038b8;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .game-area {
+      position: relative;
+      width: 600px;
+      height: 400px;
+      background-color: #ffffff;
+      margin: 0 auto;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .game-area img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .chametz {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Find the Chametz!</h1>
+  <p>Can you find all 5 pieces of chametz? Click to collect them!</p>
+  <div class="game-area" id="game-area">
+    <img src="https://images.unsplash.com/photo-1527515545080-3e23a8200f7b" alt="Kitchen Background">
+  </div>
+  <p id="score">Chametz Found: 0/5</p>
+  <button onclick="startGame()">Restart Game</button>
+</div>
+
+<script>
+  const chametzCount = 5;
+  let foundCount = 0;
+
+  function startGame() {
+    foundCount = 0;
+    document.getElementById("score").textContent = "Chametz Found: 0/5";
+    const gameArea = document.getElementById("game-area");
+    gameArea.innerHTML = '<img src="https://images.unsplash.com/photo-1527515545080-3e23a8200f7b" alt="Kitchen Background">';
+    
+    for (let i = 0; i < chametzCount; i++) {
+      const chametz = document.createElement("div");
+      chametz.className = "chametz";
+      chametz.style.left = Math.floor(Math.random() * 550) + "px";
+      chametz.style.top = Math.floor(Math.random() * 350) + "px";
+      chametz.style.backgroundImage = "url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Bagel-Plain-Alt.jpg/120px-Bagel-Plain-Alt.jpg')";
+      chametz.style.backgroundSize = "cover";
+      chametz.onclick = () => collectChametz(chametz);
+      gameArea.appendChild(chametz);
+    }
+  }
+
+  function collectChametz(element) {
+    element.remove();
+    foundCount++;
+    document.getElementById("score").textContent = `Chametz Found: ${foundCount}/5`;
+
+    if (foundCount === chametzCount) {
+      alert("You found all the chametz! Great job!");
+    }
+  }
+
+  window.onload = startGame;
+</script>
+
+</body>
+</html>
