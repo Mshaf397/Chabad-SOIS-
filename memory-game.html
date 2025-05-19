@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory Matching Game - Jewish Symbols</title>
+  <style>
+    body {
+      background-color: #0038b8;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 100px);
+      gap: 10px;
+      justify-content: center;
+    }
+    .card {
+      background-color: #ffffff;
+      color: #0038b8;
+      width: 100px;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5em;
+      cursor: pointer;
+      user-select: none;
+    }
+    .matched {
+      background-color: #cce7ff;
+      cursor: default;
+    }
+    .hidden {
+      background-color: #0038b8;
+      color: #0038b8;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Memory Matching Game - Jewish Symbols</h1>
+  <div class="grid" id="game-grid"></div>
+  <p id="score">Score: 0</p>
+  <button onclick="startGame()">Restart Game</button>
+</div>
+
+<script>
+  const symbols = ["✡️", "🕎", "📜", "🍷", "🍯", "🎭", "📖", "🎶"];
+  let gridArray = [];
+  let firstCard = null;
+  let secondCard = null;
+  let score = 0;
+
+  function startGame() {
+    gridArray = [...symbols, ...symbols].sort(() => 0.5 - Math.random());
+    score = 0;
+    document.getElementById("score").textContent = "Score: 0";
+    const gameGrid = document.getElementById("game-grid");
+    gameGrid.innerHTML = "";
+    gridArray.forEach((symbol, index) => {
+      const card = document.createElement("div");
+      card.className = "card hidden";
+      card.dataset.index = index;
+      card.onclick = () => revealCard(card);
+      gameGrid.appendChild(card);
+    });
+  }
+
+  function revealCard(card) {
+    const index = card.dataset.index;
+    if (card.classList.contains("matched") || card === firstCard) return;
+
+    card.textContent = gridArray[index];
+    card.classList.remove("hidden");
+
+    if (!firstCard) {
+      firstCard = card;
+    } else {
+      secondCard = card;
+      checkMatch();
+    }
+  }
+
+  function checkMatch() {
+    const firstSymbol = gridArray[firstCard.dataset.index];
+    const secondSymbol = gridArray[secondCard.dataset.index];
+
+    if (firstSymbol === secondSymbol) {
+      firstCard.classList.add("matched");
+      secondCard.classList.add("matched");
+      score++;
+      document.getElementById("score").textContent = `Score: ${score}`;
+    } else {
+      setTimeout(() => {
+        firstCard.classList.add("hidden");
+        secondCard.classList.add("hidden");
+        firstCard.textContent = "";
+        secondCard.textContent = "";
+      }, 1000);
+    }
+
+    firstCard = null;
+    secondCard = null;
+  }
+
+  window.onload = startGame;
+</script>
+
+</body>
+</html>
