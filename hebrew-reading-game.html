@@ -1,168 +1,447 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hebrew Reading and Writing Game</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hebrew Reading & Writing Game</title>
   <style>
     body {
       background-color: #0038b8;
-      color: #ffffff;
+      color: #fff;
       font-family: Arial, sans-serif;
       padding: 20px;
       text-align: center;
+      user-select: none;
     }
     .container {
-      max-width: 800px;
-      margin: 0 auto;
+      max-width: 900px;
+      margin: auto;
     }
-    .game-section {
-      margin-bottom: 20px;
+    label {
+      font-weight: bold;
     }
-    .input-area {
-      margin-top: 10px;
-    }
-    .input-area input {
-      padding: 10px;
-      width: 300px;
+    select, button {
       font-size: 1em;
-    }
-    .input-area button {
-      padding: 10px;
-      background-color: #ffffff;
-      color: #0038b8;
+      padding: 5px 10px;
+      margin: 10px;
+      border-radius: 4px;
       border: none;
       cursor: pointer;
-      font-size: 1em;
-      margin-left: 10px;
     }
-    .input-area button:hover {
+    button:hover {
       background-color: #cce7ff;
+      color: #0038b8;
+    }
+    #hebrew-text {
+      font-size: 2em;
+      margin: 20px 0;
+      direction: rtl;
+      font-family: 'Alef', 'David Libre', 'Frank Ruehl', serif;
+    }
+    #user-input {
+      font-size: 1.5em;
+      width: 60%;
+      padding: 10px;
+      direction: rtl;
+    }
+    #feedback {
+      margin: 10px;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+    #score, #timer {
+      font-size: 1.2em;
+      margin-top: 10px;
+    }
+    /* Script Hebrew font for cursive mode */
+    @font-face {
+      font-family: 'ScriptHebrew';
+      src: url('https://cdn.jsdelivr.net/gh/alefalefalef/alefalefalef@latest/fonts/Feldheim-MK-Collection/FeldheimMKBold.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+    }
+    .script {
+      font-family: 'ScriptHebrew', cursive;
+    }
+    /* Letter tracing area */
+    #tracing-area {
+      margin: 20px auto;
+      width: 300px;
+      height: 300px;
+      background: #e0e0e0;
+      border-radius: 12px;
+      position: relative;
+      touch-action: none;
+      user-select: none;
+    }
+    #tracing-area canvas {
+      position: absolute;
+      top: 0; left: 0;
+    }
+    #tracing-letter {
+      font-size: 8em;
+      color: rgba(0,0,0,0.1);
+      text-align: center;
+      line-height: 300px;
+      user-select: none;
+      pointer-events: none;
+      font-family: 'Alef', 'David Libre', 'Frank Ruehl', serif;
+      direction: rtl;
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Hebrew Reading & Writing Game</h1>
 
-<div class="container">
-  <h1>Hebrew Reading and Writing Game</h1>
-
-  <div class="game-section">
-    <label for="category">Select a Category:</label>
-    <select id="category">
-      <option value="weekday">Weekday Liturgy</option>
-      <option value="torah">Torah</option>
-      <option value="prophets">Prophets</option>
-      <option value="psalms">Psalms</option>
-      <option value="shabbat">Shabbat Liturgy</option>
-    </select>
-  </div>
-
-  <div class="game-section">
-    <label for="difficulty">Select Difficulty:</label>
-    <select id="difficulty">
-      <option value="easy">Easy (Vowels)</option>
-      <option value="medium">Medium (No Vowels)</option>
-      <option value="hard">Hard (No Vowels, Timer)</option>
-    </select>
-  </div>
-
-  <div class="game-section">
-    <button onclick="startGame()">Start Game</button>
-  </div>
-
-  <div class="game-section">
-    <div id="hebrew-text" style="font-size: 1.5em; margin-bottom: 20px;"></div>
-    <div class="input-area">
-      <input type="text" id="user-input" placeholder="Type the Hebrew text here...">
-      <button onclick="checkAnswer()">Check</button>
+    <div>
+      <label for="font-type">Select Font Style:</label>
+      <select id="font-type">
+        <option value="standard">Standard Block Letters</option>
+        <option value="script">Script (Cursive) Letters</option>
+      </select>
     </div>
-    <div id="feedback"></div>
-    <p id="score">Score: 0</p>
-    <p id="timer" style="font-size: 1.2em;"></p>
+
+    <div>
+      <label for="category">Select Category:</label>
+      <select id="category">
+        <option value="beginner">Beginner (Letters & Writing)</option>
+        <option value="weekday">Weekday Liturgy</option>
+        <option value="torah">Torah</option>
+        <option value="prophets">Prophets</option>
+        <option value="psalms">Psalms</option>
+        <option value="shabbat">Shabbat Liturgy</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="difficulty">Select Difficulty:</label>
+      <select id="difficulty">
+        <option value="beginner">Beginner (Tracing & Writing)</option>
+        <option value="easy">Easy (Vowels)</option>
+        <option value="medium">Medium (No Vowels)</option>
+        <option value="hard">Hard (No Vowels, Timer)</option>
+      </select>
+    </div>
+
+    <div>
+      <button onclick="startGame()">Start Game</button>
+    </div>
+
+    <div id="game-area" style="margin-top: 30px;">
+      <div id="hebrew-text"></div>
+
+      <div id="tracing-area" style="display:none;">
+        <div id="tracing-letter"></div>
+        <canvas id="tracing-canvas" width="300" height="300"></canvas>
+      </div>
+
+      <div id="input-area" style="margin-top: 10px; display:none;">
+        <input type="text" id="user-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Type the Hebrew text here..." />
+        <button onclick="checkAnswer()">Check</button>
+      </div>
+
+      <div id="feedback"></div>
+      <p id="score">Score: 0</p>
+      <p id="timer"></p>
+    </div>
   </div>
-</div>
 
-<script>
-  const texts = {
-    weekday: [
-      { withVowels: "מוֹדֶה אֲנִי לְפָנֶיךָ", noVowels: "מודה אני לפניך" },
-      { withVowels: "שְׁמַע יִשְׂרָאֵל ה' אֱלֹקֵינוּ ה' אֶחָד", noVowels: "שמע ישראל ה' אלקינו ה' אחד" }
-    ],
-    torah: [
-      { withVowels: "בְּרֵאשִׁית בָּרָא אֱלֹקִים", noVowels: "בראשית ברא אלקים" },
-      { withVowels: "וַיֹּאמֶר אֱלֹקִים יְהִי אוֹר", noVowels: "ויאמר אלקים יהי אור" }
-    ],
-    prophets: [
-      { withVowels: "כֹּה אָמַר ה'", noVowels: "כה אמר ה'" },
-      { withVowels: "שׁוּבוּ אֵלַי וְאָשׁוּב אֲלֵיכֶם", noVowels: "שובו אלי ואשוב אליכם" }
-    ],
-    psalms: [
-      { withVowels: "אֲשַׁרֵי הַגֶּבֶר", noVowels: "אשרי הגבר" },
-      { withVowels: "מִזְמוֹר לְדָוִד", noVowels: "מזמור לדוד" }
-    ],
-    shabbat: [
-      { withVowels: "לְכָה דוֹדִי לִקְרַאת כַּלָּה", noVowels: "לכה דודי לקראת כלה" },
-      { withVowels: "בּוֹאִי בְשָׁלוֹם", noVowels: "בואי בשלום" }
-    ]
-  };
-
-  let selectedText = "";
-  let currentCategory = "";
-  let difficulty = "";
-  let score = 0;
-  let timerInterval = null;
-
-  function startGame() {
-    currentCategory = document.getElementById("category").value;
-    difficulty = document.getElementById("difficulty").value;
-    const categoryTexts = texts[currentCategory];
-    const randomText = categoryTexts[Math.floor(Math.random() * categoryTexts.length)];
-
-    if (difficulty === "easy") {
-      selectedText = randomText.withVowels;
-    } else {
-      selectedText = randomText.noVowels;
-    }
-
-    document.getElementById("hebrew-text").textContent = selectedText;
-    document.getElementById("user-input").value = "";
-    document.getElementById("feedback").textContent = "";
-    document.getElementById("timer").textContent = "";
-    
-    if (difficulty === "hard") {
-      startTimer();
-    }
-  }
-
-  function checkAnswer() {
-    const userInput = document.getElementById("user-input").value.trim();
-    if (userInput === selectedText) {
-      score += 10;
-      document.getElementById("feedback").textContent = "Correct!";
-      document.getElementById("score").textContent = "Score: " + score;
-      startGame();
-    } else {
-      document.getElementById("feedback").textContent = "Try again.";
-    }
-  }
-
-  function startTimer() {
-    let timeLeft = 30;
-    document.getElementById("timer").textContent = `Time: ${timeLeft}s`;
-
-    timerInterval = setInterval(() => {
-      timeLeft--;
-      document.getElementById("timer").textContent = `Time: ${timeLeft}s`;
-
-      if (timeLeft <= 0) {
-        clearInterval(timerInterval);
-        document.getElementById("feedback").textContent = "Time's up!";
-        document.getElementById("hebrew-text").textContent = "";
-        document.getElementById("user-input").disabled = true;
+  <script>
+    // Data with more text selections and vowels/no vowels for categories
+    const texts = {
+      weekday: [
+        {withVowels: "מוֹדֶה אֲנִי לְפָנֶיךָ", noVowels: "מודה אני לפניך"},
+        {withVowels: "שְׁמַע יִשְׂרָאֵל ה' אֱלֹקֵינוּ ה' אֶחָד", noVowels: "שמע ישראל ה' אלקינו ה' אחד"},
+        {withVowels: "בָּרוּךְ אַתָּה ה'", noVowels: "ברוך אתה ה'"},
+        {withVowels: "אֲנִי מַאֲמִין בְּאַחֲרִית הַיָּמִים", noVowels: "אני מאמין באחרית הימים"}
+      ],
+      torah: [
+        {withVowels: "בְּרֵאשִׁית בָּרָא אֱלֹקִים", noVowels: "בראשית ברא אלקים"},
+        {withVowels: "וַיֹּאמֶר אֱלֹקִים יְהִי אוֹר", noVowels: "ויאמר אלקים יהי אור"},
+        {withVowels: "אֵין עוֹד מִלְּבַדּוֹ", noVowels: "אין עוד מלבדו"},
+        {withVowels: "לֹא תִרְצָח", noVowels: "לא תרצח"}
+      ],
+      prophets: [
+        {withVowels: "כֹּה אָמַר ה'", noVowels: "כה אמר ה'"},
+        {withVowels: "שׁוּבוּ אֵלַי וְאָשׁוּב אֲלֵיכֶם", noVowels: "שובו אלי ואשוב אליכם"},
+        {withVowels: "צְדָקָה תַּצִּיל מִמָּוֶת", noVowels: "צדקה תציל ממות"},
+        {withVowels: "אַל תִּירָא כִּי אִתְּךָ אָנִי", noVowels: "אל תירא כי איתך אני"}
+      ],
+      psalms: [
+        {withVowels: "אֲשַׁרֵי הַגֶּבֶר", noVowels: "אשרי הגבר"},
+        {withVowels: "מִזְמוֹר לְדָוִד", noVowels: "מזמור לדוד"},
+        {withVowels: "הַלְלוּיָהּ", noVowels: "הללויה"},
+        {withVowels: "אֲנִי אֶשְׁמְרֶנּוּ בְּכָל-עֵת", noVowels: "אני אשמרנו בכל עת"}
+      ],
+      shabbat: [
+        {withVowels: "לְכָה דוֹדִי לִקְרַאת כַּלָּה", noVowels: "לכה דודי לקראת כלה"},
+        {withVowels: "בּוֹאִי בְשָׁלוֹם", noVowels: "בואי בשלום"},
+        {withVowels: "שַׁבָּת שַׁלְוָה", noVowels: "שבת שלווה"},
+        {withVowels: "זְכוֹר אֶת-יוֹם הַשַּׁבָּת", noVowels: "זכור את יום השבת"}
+      ],
+      beginnerLetters: {
+        standard: ['א','ב','ג','ד','ה','ו','ז','ח','ט','י','כ','ל','מ','נ','ס','ע','פ','צ','ק','ר','ש','ת'],
+        script: ['א','ב','ג','ד','ה','ו','ז','ח','ט','י','כ','ל','מ','נ','ס','ע','פ','צ','ק','ר','ש','ת'] // same letters, cursive font
+      },
+      beginnerWords: {
+        standard: [
+          {word: "אָב", meaning: "father"},
+          {word: "אִם", meaning: "mother"},
+          {word: "דָּג", meaning: "fish"},
+          {word: "סֵפֶר", meaning: "book"},
+          {word: "שַׁמַּיִם", meaning: "sky"}
+        ],
+        script: [
+          {word: "אָב", meaning: "father"},
+          {word: "אִם", meaning: "mother"},
+          {word: "דָּג", meaning: "fish"},
+          {word: "סֵפֶר", meaning: "book"},
+          {word: "שַׁמַּיִם", meaning: "sky"}
+        ]
       }
-    }, 1000);
-  }
-</script>
+    };
 
+    let currentText = "";
+    let score = 0;
+    let timerInterval = null;
+    let timeLeft = 30;
+    let tracingCanvas, tracingCtx;
+    let isTracing = false;
+    let lastPos = null;
+
+    const hebrewTextEl = document.getElementById("hebrew-text");
+    const userInputEl = document.getElementById("user-input");
+    const feedbackEl = document.getElementById("feedback");
+    const scoreEl = document.getElementById("score");
+    const timerEl = document.getElementById("timer");
+    const tracingArea = document.getElementById("tracing-area");
+    const tracingLetterEl = document.getElementById("tracing-letter");
+    const tracingCanvasEl = document.getElementById("tracing-canvas");
+
+    // Start game handler
+    function startGame() {
+      clearInterval(timerInterval);
+      feedbackEl.textContent = "";
+      score = 0;
+      scoreEl.textContent = "Score: 0";
+      timerEl.textContent = "";
+      userInputEl.value = "";
+      userInputEl.disabled = false;
+
+      const fontType = document.getElementById("font-type").value;
+      const category = document.getElementById("category").value;
+      const difficulty = document.getElementById("difficulty").value;
+
+      // Set font family according to font-type
+      if (fontType === "script") {
+        hebrewTextEl.classList.add("script");
+        tracingLetterEl.classList.add("script");
+      } else {
+        hebrewTextEl.classList.remove("script");
+        tracingLetterEl.classList.remove("script");
+      }
+
+      if (category === "beginner") {
+        // Beginner mode: letters or words tracing/writing
+        tracingArea.style.display = "block";
+        userInputEl.style.display = "inline-block";
+        userInputEl.placeholder = "Write the letter or word here...";
+        userInputEl.value = "";
+        userInputEl.focus();
+        feedbackEl.textContent = "Trace the letter below and then type it.";
+        startTracingSession(fontType);
+        timerEl.textContent = "";
+        return;
+      } else {
+        tracingArea.style.display = "none";
+        userInputEl.style.display = "inline-block";
+      }
+
+      // Pick random text based on difficulty
+      if (difficulty === "beginner") {
+        userInputEl.placeholder = "Type the Hebrew text here...";
+        currentText = selectRandomText(category, true);
+      } else if (difficulty === "easy") {
+        userInputEl.placeholder = "Type the Hebrew text with vowels";
+        currentText = selectRandomText(category, true);
+      } else {
+        userInputEl.placeholder = "Type the Hebrew text without vowels";
+        currentText = selectRandomText(category, false);
+      }
+
+      hebrewTextEl.textContent = currentText;
+      userInputEl.value = "";
+      userInputEl.focus();
+
+      // Timer for hard difficulty
+      if (difficulty === "hard") {
+        timeLeft = 30;
+        timerEl.textContent = `Time left: ${timeLeft}s`;
+        timerInterval = setInterval(() => {
+          timeLeft--;
+          timerEl.textContent = `Time left: ${timeLeft}s`;
+          if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            feedbackEl.textContent = `Time's up! The correct answer was: ${currentText}`;
+            userInputEl.disabled = true;
+          }
+        }, 1000);
+      } else {
+        timerEl.textContent = "";
+      }
+    }
+
+    // Select random text from chosen category, with or without vowels
+    function selectRandomText(category, withVowels) {
+      if (!texts[category]) return "";
+      const arr = texts[category];
+      const item = arr[Math.floor(Math.random() * arr.length)];
+      return withVowels ? item.withVowels : item.noVowels;
+    }
+
+    // Check user answer
+    function checkAnswer() {
+      const fontType = document.getElementById("font-type").value;
+      const category = document.getElementById("category").value;
+      const difficulty = document.getElementById("difficulty").value;
+
+      let answer = userInputEl.value.trim();
+
+      if (category === "beginner") {
+        // Beginner mode check: compare typed word to current letter/word
+        if (answer === currentText) {
+          feedbackEl.textContent = "Correct! Well done.";
+          score++;
+          scoreEl.textContent = `Score: ${score}`;
+          startTracingSession(fontType); // Next letter or word
+          userInputEl.value = "";
+          userInputEl.focus();
+        } else {
+          feedbackEl.textContent = "Try again.";
+        }
+        return;
+      }
+
+      if (!answer) {
+        feedbackEl.textContent = "Please type your answer.";
+        return;
+      }
+
+      clearInterval(timerInterval);
+
+      if (answer === currentText) {
+        feedbackEl.textContent = "Correct!";
+        score++;
+        scoreEl.textContent = `Score: ${score}`;
+      } else {
+        feedbackEl.textContent = `Incorrect. The correct answer was: ${currentText}`;
+      }
+      userInputEl.value = "";
+      userInputEl.focus();
+      // Next question
+      setTimeout(() => startGame(), 1500);
+    }
+
+    // Beginner mode tracing and letter/word selection
+    function startTracingSession(fontType) {
+      tracingCtx = tracingCanvasEl.getContext("2d");
+      tracingCtx.clearRect(0, 0, tracingCanvasEl.width, tracingCanvasEl.height);
+      isTracing = false;
+      lastPos = null;
+
+      // Decide if letter or word for beginner mode
+      const mode = Math.random() < 0.6 ? 'letter' : 'word';
+
+      if (mode === 'letter') {
+        // Random letter
+        const letters = texts.beginnerLetters[fontType];
+        currentText = letters[Math.floor(Math.random() * letters.length)];
+      } else {
+        // Random word
+        const words = texts.beginnerWords[fontType];
+        const w = words[Math.floor(Math.random() * words.length)];
+        currentText = w.word;
+        feedbackEl.textContent = `Word meaning: ${w.meaning}`;
+      }
+
+      hebrewTextEl.textContent = "";
+      tracingLetterEl.textContent = currentText;
+
+      // Clear input
+      userInputEl.value = "";
+      userInputEl.focus();
+
+      // Setup tracing events
+      setupTracingEvents();
+    }
+
+    // Setup tracing canvas events for drawing
+    function setupTracingEvents() {
+      tracingCanvasEl.width = tracingCanvasEl.clientWidth;
+      tracingCanvasEl.height = tracingCanvasEl.clientHeight;
+      tracingCtx.lineWidth = 8;
+      tracingCtx.lineCap = "round";
+      tracingCtx.strokeStyle = "#1565c0";
+
+      // Clear previous listeners by cloning
+      const oldCanvas = tracingCanvasEl;
+      const newCanvas = oldCanvas.cloneNode(true);
+      oldCanvas.parentNode.replaceChild(newCanvas, oldCanvas);
+      tracingCanvasEl = newCanvas;
+      tracingCtx = tracingCanvasEl.getContext("2d");
+
+      // Touch / Mouse drawing
+      tracingCanvasEl.addEventListener('mousedown', startDrawing);
+      tracingCanvasEl.addEventListener('touchstart', startDrawing);
+
+      tracingCanvasEl.addEventListener('mouseup', endDrawing);
+      tracingCanvasEl.addEventListener('touchend', endDrawing);
+
+      tracingCanvasEl.addEventListener('mousemove', draw);
+      tracingCanvasEl.addEventListener('touchmove', draw);
+    }
+
+    function getPos(evt) {
+      let rect = tracingCanvasEl.getBoundingClientRect();
+      if (evt.touches) {
+        return {
+          x: evt.touches[0].clientX - rect.left,
+          y: evt.touches[0].clientY - rect.top
+        };
+      } else {
+        return {
+          x: evt.clientX - rect.left,
+          y: evt.clientY - rect.top
+        };
+      }
+    }
+
+    function startDrawing(evt) {
+      evt.preventDefault();
+      isTracing = true;
+      lastPos = getPos(evt);
+    }
+
+    function endDrawing(evt) {
+      evt.preventDefault();
+      isTracing = false;
+      lastPos = null;
+    }
+
+    function draw(evt) {
+      if (!isTracing) return;
+      evt.preventDefault();
+      const pos = getPos(evt);
+      tracingCtx.beginPath();
+      if (lastPos) {
+        tracingCtx.moveTo(lastPos.x, lastPos.y);
+        tracingCtx.lineTo(pos.x, pos.y);
+        tracingCtx.stroke();
+      }
+      lastPos = pos;
+    }
+
+  </script>
 </body>
 </html>
