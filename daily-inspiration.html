@@ -1,60 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Daily Torah Inspiration</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #0038b8;
-    color: white;
-    text-align: center;
-    padding: 1em;
-  }
-  .inspiration-container {
-    background-color: #0052cc;
-    padding: 1em;
-    border-radius: 8px;
-    max-width: 400px;
-    margin: auto;
-  }
-  .inspiration-container img {
-    width: 100%;
-    max-width: 150px;
-    border-radius: 50%;
-    margin-bottom: 1em;
-  }
-  .quote {
-    font-size: 1.2em;
-    margin-bottom: 1em;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Daily Torah Inspiration</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0038b8;
+      color: white;
+      text-align: center;
+      padding: 1em;
+    }
+    .inspiration-container {
+      background-color: #0052cc;
+      padding: 1em;
+      border-radius: 8px;
+      max-width: 400px;
+      margin: auto;
+    }
+    .inspiration-container img {
+      width: 100%;
+      max-width: 150px;
+      border-radius: 50%;
+      margin-bottom: 1em;
+    }
+    .quote {
+      font-size: 1.2em;
+      margin-bottom: 1em;
+    }
+  </style>
 </head>
 <body>
 
-<h1>Daily Torah Inspiration</h1>
+  <h1>Daily Torah Inspiration</h1>
 
-<div class="inspiration-container">
-  <img src="images/rebbe.jpg" alt="Rebbe" />
-  <div class="quote" id="quote"></div>
-</div>
+  <div class="inspiration-container">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Menachem_Mendel_Schneerson_1987.jpg" alt="Rebbe" />
+    <div class="quote" id="quote"></div>
+  </div>
 
-<script>
-  const quotes = [
-    "Think good, and it will be good.",
-    "A little light dispels a lot of darkness.",
-    "The time for your redemption has arrived.",
-    "Every Jew is a diamond.",
-    "We must strive to transform the world into a dwelling place for G-d.",
-    "The soul never gets tired of doing mitzvos."
-  ];
+  <script>
+    const quotes = [
+      "Think good, and it will be good.",
+      "A little light dispels a lot of darkness.",
+      "The time for your redemption has arrived.",
+      "Every Jew is a diamond.",
+      "We must strive to transform the world into a dwelling place for G-d.",
+      "The soul never gets tired of doing mitzvos."
+    ];
 
-  const today = new Date().getDate();
-  const quoteElement = document.getElementById('quote');
-  const quoteIndex = today % quotes.length;
-  quoteElement.textContent = quotes[quoteIndex];
-</script>
+    const today = new Date().getDate();
+    const quoteElement = document.getElementById('quote');
+    const quoteIndex = today % quotes.length;
+    quoteElement.textContent = quotes[quoteIndex];
+  </script>
 
 </body>
 </html>
