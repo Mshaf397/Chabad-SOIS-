@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mitzvah Tracker</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #0038b8; /* Israeli flag blue */
+    color: white;
+    padding: 1em;
+    max-width: 600px;
+    margin: auto;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 1em;
+  }
+  form {
+    margin-bottom: 1em;
+  }
+  input, button {
+    font-size: 1em;
+    padding: 0.3em;
+    margin: 0.3em 0;
+  }
+  button {
+    background: #fff;
+    color: #0038b8;
+    border: none;
+    cursor: pointer;
+  }
+  ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  li {
+    background: #0052cc;
+    margin-bottom: 0.5em;
+    padding: 0.5em;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .desc {
+    flex-grow: 1;
+  }
+  .date {
+    margin-left: 1em;
+    font-size: 0.9em;
+    color: #ddd;
+  }
+</style>
+</head>
+<body>
+  <h1>Mitzvah Tracker</h1>
+  <form id="mitzvah-form">
+    <label>
+      Mitzvah Description:<br />
+      <input type="text" id="mitzvah-desc" required placeholder="Example: Donated tzedakah" />
+    </label><br />
+    <label>
+      Date:<br />
+      <input type="date" id="mitzvah-date" required />
+    </label><br />
+    <button type="submit">Add Mitzvah</button>
+  </form>
+
+  <ul id="mitzvah-list"></ul>
+
+<script>
+  const form = document.getElementById('mitzvah-form');
+  const descInput = document.getElementById('mitzvah-desc');
+  const dateInput = document.getElementById('mitzvah-date');
+  const list = document.getElementById('mitzvah-list');
+
+  // Load mitzvot from localStorage or start empty
+  let mitzvot = JSON.parse(localStorage.getItem('mitzvahTrackerData')) || [];
+
+  function save() {
+    localStorage.setItem('mitzvahTrackerData', JSON.stringify(mitzvot));
+  }
+
+  function render() {
+    list.innerHTML = '';
+    mitzvot.forEach((item, index) => {
+      const li = document.createElement('li');
+      const descSpan = document.createElement('span');
+      descSpan.className = 'desc';
+      descSpan.textContent = item.description;
+      const dateSpan = document.createElement('span');
+      dateSpan.className = 'date';
+      dateSpan.textContent = new Date(item.date).toLocaleDateString();
+      const removeBtn = document.createElement('button');
+      removeBtn.textContent = 'Remove';
+      removeBtn.onclick = () => {
+        mitzvot.splice(index, 1);
+        save();
+        render();
+      };
+      li.appendChild(descSpan);
+      li.appendChild(dateSpan);
+      li.appendChild(removeBtn);
+      list.appendChild(li);
+    });
+  }
+
+  form.onsubmit = (e) => {
+    e.preventDefault();
+    mitzvot.push({
+      description: descInput.value.trim(),
+      date: dateInput.value,
+    });
+    save();
+    render();
+    descInput.value = '';
+    dateInput.value = '';
+  };
+
+  render();
+</script>
+</body>
+</html>
