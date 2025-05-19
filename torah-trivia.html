@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Torah Trivia Game</title>
+  <style>
+    body {
+      background-color: #0038b8;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .question {
+      font-size: 1.2em;
+      margin-bottom: 1em;
+    }
+    .answer-btn {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      background-color: #ffffff;
+      color: #0038b8;
+      border: none;
+      cursor: pointer;
+      font-size: 1em;
+    }
+    .answer-btn:hover {
+      background-color: #cce7ff;
+    }
+    .timer {
+      margin-bottom: 1em;
+    }
+    .score {
+      margin-bottom: 1em;
+    }
+    .mode-btn {
+      margin: 5px;
+      padding: 10px;
+      background-color: #ffffff;
+      color: #0038b8;
+      border: none;
+      cursor: pointer;
+    }
+    .mode-btn:hover {
+      background-color: #cce7ff;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Torah Trivia Game</h1>
+  <div class="modes">
+    <button class="mode-btn" onclick="startGame('easy')">Easy</button>
+    <button class="mode-btn" onclick="startGame('medium')">Medium</button>
+    <button class="mode-btn" onclick="startGame('hard')">Hard</button>
+    <button class="mode-btn" onclick="startGame('challenge')">Challenge</button>
+    <button class="mode-btn" onclick="startTimedMode()">Timed Mode</button>
+  </div>
+
+  <div class="game-area" style="display: none;">
+    <div class="timer">Time: <span id="timer">00:00</span></div>
+    <div class="score">Score: <span id="score">0</span></div>
+    <div class="question" id="question">Question goes here</div>
+    <div id="answers"></div>
+  </div>
+</div>
+
+<script>
+  const questions = {
+    easy: [
+      { question: "Who was the first man created?", answers: ["Adam", "Moses", "Abraham", "Noah"], correct: 0 },
+      { question: "What did Noah build?", answers: ["An Ark", "A Temple", "A City", "A Tower"], correct: 0 },
+      // Add more easy questions
+    ],
+    medium: [
+      { question: "How many sons did Jacob have?", answers: ["10", "12", "14", "8"], correct: 1 },
+      { question: "What is the first book of the Torah?", answers: ["Genesis", "Exodus", "Leviticus", "Numbers"], correct: 0 },
+      // Add more medium questions
+    ],
+    hard: [
+      { question: "Who was swallowed by a big fish?", answers: ["Jonah", "David", "Solomon", "Joseph"], correct: 0 },
+      { question: "Which river did the Israelites cross to enter Canaan?", answers: ["Jordan", "Nile", "Euphrates", "Tigris"], correct: 0 },
+      // Add more hard questions
+    ],
+    challenge: [
+      { question: "What was the name of Moses' sister?", answers: ["Miriam", "Leah", "Rachel", "Deborah"], correct: 0 },
+      { question: "How many plagues were there in Egypt?", answers: ["7", "10", "12", "15"], correct: 1 },
+      // Add more challenge questions
+    ]
+  };
+
+  let currentQuestions = [];
+  let currentQuestionIndex = 0;
+  let score = 0;
+  let timer;
+  let timeRemaining = 0;
+  let isTimedMode = false;
+
+  function startGame(mode) {
+    currentQuestions = questions[mode];
+    currentQuestionIndex = 0;
+    score = 0;
+    isTimedMode = false;
+    document.getElementById("score").textContent = score;
+    document.querySelector(".game-area").style.display = "block";
+    document.querySelector(".modes").style.display = "none";
+    showQuestion();
+  }
+
+  function startTimedMode() {
+    let allQuestions = [];
+    for (let mode in questions) {
+      allQuestions = allQuestions.concat(questions[mode]);
+    }
+    currentQuestions = allQuestions.sort(() => 0.5 - Math.random()).slice(0, 100);
+    currentQuestionIndex = 0;
+    score = 0;
+    isTimedMode = true;
+    timeRemaining = 180;
+    document.getElementById("score").textContent = score;
+    document.querySelector(".game-area").style.display = "block";
+    document.querySelector(".modes").style.display = "none";
+    startTimer();
+    showQuestion();
+  }
+
+  function startTimer() {
+    timer = setInterval(() => {
+      timeRemaining--;
+      document.getElementById("timer").textContent = formatTime(timeRemaining);
+      if (timeRemaining <= 0) {
+        clearInterval(timer);
+        endGame();
+      }
+    }, 1000);
+  }
+
+  function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  }
+
+  function showQuestion() {
+    if (currentQuestionIndex >= currentQuestions.length) {
+      endGame();
+      return;
+    }
+
+    const questionData = currentQuestions[currentQuestionIndex];
+    document.getElementById("question").textContent = questionData.question;
+    const answersDiv = document.getElementById("answers");
+    answersDiv.innerHTML = "";
+    
+    questionData.answers.forEach((answer, index) => {
+      const button = document.createElement("button");
+      button.textContent = answer;
+      button.className = "answer-btn";
+      button.onclick = () => checkAnswer(index);
+      answersDiv.appendChild(button);
+    });
+  }
+
+  function checkAnswer(selectedIndex) {
+    const questionData = currentQuestions[currentQuestionIndex];
+    if (selectedIndex === questionData.correct) {
+      score++;
+      document.getElementById("score").textContent = score;
+    }
+    currentQuestionIndex++;
+    showQuestion();
+  }
+
+  function endGame() {
+    document.querySelector(".game-area").style.display = "none";
+    document.querySelector(".modes").style.display = "block";
+    if (isTimedMode) {
+      alert(`Time's up! Your final score: ${score}`);
+    } else {
+      alert(`Game Over! Your final score: ${score}`);
+    }
+  }
+</script>
+
+</body>
+</html>
