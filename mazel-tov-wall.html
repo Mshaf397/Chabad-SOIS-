@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mazel Tov Wall</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0038b8;
+      color: white;
+      text-align: center;
+      padding: 1em;
+    }
+    .wall-container {
+      max-width: 600px;
+      margin: auto;
+    }
+    .form-container {
+      margin-bottom: 2em;
+    }
+    .wall-item {
+      background-color: #0052cc;
+      padding: 1em;
+      border-radius: 8px;
+      margin-bottom: 1em;
+    }
+    .wall-item img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-bottom: 0.5em;
+    }
+    .wall-item p {
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Mazel Tov Wall</h1>
+
+  <div class="form-container">
+    <h2>Add Your Mazel Tov!</h2>
+    <input type="text" id="caption" placeholder="Enter a caption..." /><br><br>
+    <input type="file" id="photoInput" accept="image/*" /><br><br>
+    <button onclick="addMazelTov()">Submit</button>
+  </div>
+
+  <div class="wall-container" id="mazelTovWall">
+    <h2>Recent Mazel Tovs</h2>
+  </div>
+
+  <script>
+    const wallContainer = document.getElementById('mazelTovWall');
+
+    function addMazelTov() {
+      const caption = document.getElementById('caption').value;
+      const photoInput = document.getElementById('photoInput');
+      const file = photoInput.files[0];
+
+      if (!file || !caption) {
+        alert("Please enter a caption and select a photo.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const wallItem = document.createElement('div');
+        wallItem.className = 'wall-item';
+
+        const img = document.createElement('img');
+        img.src = event.target.result;
+        wallItem.appendChild(img);
+
+        const p = document.createElement('p');
+        p.textContent = caption;
+        wallItem.appendChild(p);
+
+        wallContainer.prepend(wallItem);
+      };
+
+      reader.readAsDataURL(file);
+
+      // Clear inputs
+      document.getElementById('caption').value = '';
+      document.getElementById('photoInput').value = '';
+    }
+  </script>
+
+</body>
+</html>
