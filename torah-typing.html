@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Torah Typing Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0038b8;
+      color: white;
+      text-align: center;
+      padding: 1em;
+    }
+    .game-container {
+      max-width: 600px;
+      margin: auto;
+      background-color: #0052cc;
+      padding: 1em;
+      border-radius: 8px;
+      margin-top: 1em;
+    }
+    .quote {
+      font-size: 1.2em;
+      margin-bottom: 1em;
+    }
+    .input-container {
+      margin-bottom: 1em;
+    }
+    .feedback {
+      margin-top: 1em;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Torah Typing Game</h1>
+
+<div class="game-container">
+  <div class="quote" id="quote">Loading...</div>
+
+  <div class="input-container">
+    <input type="text" id="typingInput" placeholder="Start typing..." oninput="checkTyping()" />
+  </div>
+
+  <div class="feedback" id="feedback"></div>
+  <div class="feedback" id="score"></div>
+</div>
+
+<script>
+  const torahQuotes = [
+    "שמע ישראל ה' אלוקינו ה' אחד",
+    "ואהבת לרעך כמוך",
+    "כבד את אביך ואת אמך",
+    "לא תרצח",
+    "לא תגנוב",
+    "לא תנאף",
+    "לא תחמוד",
+    "אנוכי ה' אלוקיך",
+    "זכור את יום השבת לקדשו",
+    "לא תענה ברעך עד שקר"
+  ];
+
+  let currentQuote = "";
+  let startTime = 0;
+  let totalWords = 0;
+  let totalErrors = 0;
+
+  function getRandomQuote() {
+    const randomIndex = Math.floor(Math.random() * torahQuotes.length);
+    currentQuote = torahQuotes[randomIndex];
+    document.getElementById("quote").innerText = currentQuote;
+    document.getElementById("typingInput").value = "";
+    document.getElementById("feedback").innerText = "";
+    document.getElementById("score").innerText = "";
+    startTime = Date.now();
+  }
+
+  function calculateWPM(timeTaken, wordCount) {
+    const minutes = timeTaken / 60000;
+    return (wordCount / minutes).toFixed(2);
+  }
+
+  function calculateAccuracy(userInput, quote) {
+    let errors = 0;
+    const inputChars = userInput.split("");
+    const quoteChars = quote.split("");
+
+    for (let i = 0; i < quoteChars.length; i++) {
+      if (inputChars[i] !== quoteChars[i]) {
+        errors++;
+      }
+    }
+
+    const accuracy = ((quote.length - errors) / quote.length) * 100;
+    return accuracy.toFixed(2);
+  }
+
+  function checkTyping() {
+    const userInput = document.getElementById("typingInput").value;
+    const feedback = document.getElementById("feedback");
+    const score = document.getElementById("score");
+
+    if (userInput === currentQuote) {
+      const timeTaken = Date.now() - startTime;
+      const wordCount = currentQuote.split(" ").length;
+      const wpm = calculateWPM(timeTaken, wordCount);
+      const accuracy = calculateAccuracy(userInput, currentQuote);
+
+      feedback.innerText = `Correct! Time: ${(timeTaken / 1000).toFixed(2)} seconds`;
+      score.innerText = `WPM: ${wpm} | Accuracy: ${accuracy}%`;
+
+      setTimeout(getRandomQuote, 3000);
+    }
+  }
+
+  window.onload = getRandomQuote;
+</script>
+
+</body>
+</html>
