@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Torah Quiz - Chabad SOIS</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      max-width: 600px;
+      margin: 2rem auto;
+      font-family: Arial, sans-serif;
+      color: #002366; /* Israeli blue */
+      background-color: #f0f8ff;
+      padding: 1rem;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .quiz-question {
+      margin-bottom: 1rem;
+    }
+    button {
+      background-color: #002366;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      margin-top: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0044bb;
+    }
+    .result {
+      margin-top: 2rem;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Torah Quiz</h1>
+  <p>Test your knowledge!</p>
+</header>
+
+<main>
+  <div id="quiz-container">
+    <!-- Quiz questions will appear here -->
+  </div>
+
+  <button id="submit-btn">Submit Answers</button>
+
+  <div id="result" class="result"></div>
+</main>
+
+<footer>
+  <p>3151 Stoney Street, Mohegan Lake, NY 10547</p>
+  <p>Text only: 857-271-1212</p>
+  <p>Email: <a href="mailto:askchabadsois@gmail.com">askchabadsois@gmail.com</a></p>
+</footer>
+
+<script>
+  const quizData = [
+    {
+      question: "How many books are in the Torah?",
+      options: ["3", "5", "7", "10"],
+      answer: "5"
+    },
+    {
+      question: "Who received the Torah on Mount Sinai?",
+      options: ["Abraham", "Moses", "David", "Isaiah"],
+      answer: "Moses"
+    },
+    {
+      question: "What is the first book of the Torah?",
+      options: ["Exodus", "Leviticus", "Genesis", "Numbers"],
+      answer: "Genesis"
+    },
+    {
+      question: "What language was the Torah originally written in?",
+      options: ["Hebrew", "Aramaic", "Greek", "Latin"],
+      answer: "Hebrew"
+    },
+    {
+      question: "What is the name of the holiday celebrating the giving of the Torah?",
+      options: ["Passover", "Shavuot", "Sukkot", "Hanukkah"],
+      answer: "Shavuot"
+    }
+  ];
+
+  const quizContainer = document.getElementById("quiz-container");
+  const submitBtn = document.getElementById("submit-btn");
+  const resultDiv = document.getElementById("result");
+
+  function loadQuiz() {
+    quizContainer.innerHTML = "";
+    quizData.forEach((item, index) => {
+      const questionEl = document.createElement("div");
+      questionEl.className = "quiz-question";
+
+      const questionTitle = document.createElement("h2");
+      questionTitle.textContent = `Q${index + 1}: ${item.question}`;
+      questionEl.appendChild(questionTitle);
+
+      item.options.forEach(option => {
+        const label = document.createElement("label");
+        label.style.display = "block";
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = `question${index}`;
+        input.value = option;
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(option));
+        questionEl.appendChild(label);
+      });
+
+      quizContainer.appendChild(questionEl);
+    });
+  }
+
+  function checkAnswers() {
+    let score = 0;
+    quizData.forEach((item, index) => {
+      const selected = document.querySelector(`input[name="question${index}"]:checked`);
+      if (selected && selected.value === item.answer) {
+        score++;
+      }
+    });
+    resultDiv.textContent = `You scored ${score} out of ${quizData.length}!`;
+  }
+
+  submitBtn.addEventListener("click", () => {
+    checkAnswers();
+  });
+
+  loadQuiz();
+</script>
+
+</body>
+</html>
