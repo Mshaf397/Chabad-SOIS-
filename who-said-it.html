@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Who Said It? - Torah Quotes</title>
+  <style>
+    body {
+      background-color: #0038b8;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .question {
+      font-size: 1.2em;
+      margin-bottom: 1em;
+    }
+    .answer-btn {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      background-color: #ffffff;
+      color: #0038b8;
+      border: none;
+      cursor: pointer;
+      font-size: 1em;
+    }
+    .answer-btn:hover {
+      background-color: #cce7ff;
+    }
+    .score {
+      margin-bottom: 1em;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Who Said It?</h1>
+  <div class="score">Score: <span id="score">0</span></div>
+  <div class="question" id="question">"Quote goes here"</div>
+  <div id="answers"></div>
+</div>
+
+<script>
+  const quotes = [
+    { quote: "Let my people go.", speakers: ["Moses", "Aaron", "Pharaoh", "Joseph"], correct: 0 },
+    { quote: "In the beginning, G-d created the heavens and the earth.", speakers: ["Moses", "Adam", "David", "G-d"], correct: 3 },
+    { quote: "Am I my brother’s keeper?", speakers: ["Cain", "Abel", "Esau", "Jacob"], correct: 0 },
+    { quote: "The Lord is my shepherd; I shall not want.", speakers: ["David", "Solomon", "Moses", "Aaron"], correct: 0 },
+    { quote: "Hear, O Israel: The Lord our G-d, the Lord is One.", speakers: ["Moses", "Aaron", "David", "Rabbi Akiva"], correct: 0 },
+    { quote: "If I am not for myself, who will be for me?", speakers: ["Hillel", "Shammai", "Rabbi Akiva", "Maimonides"], correct: 0 },
+    { quote: "A good name is better than precious oil.", speakers: ["Solomon", "David", "Moses", "Aaron"], correct: 0 },
+    { quote: "Repent one day before your death.", speakers: ["Rabbi Eliezer", "Rabbi Akiva", "Hillel", "Shammai"], correct: 0 },
+    { quote: "The world stands on three things: Torah, service, and deeds of kindness.", speakers: ["Shimon HaTzaddik", "Moses", "David", "Elijah"], correct: 0 }
+  ];
+
+  let currentQuoteIndex = 0;
+  let score = 0;
+
+  function startGame() {
+    currentQuoteIndex = 0;
+    score = 0;
+    document.getElementById("score").textContent = score;
+    showQuote();
+  }
+
+  function showQuote() {
+    if (currentQuoteIndex >= quotes.length) {
+      endGame();
+      return;
+    }
+
+    const quoteData = quotes[currentQuoteIndex];
+    document.getElementById("question").textContent = `"${quoteData.quote}"`;
+
+    const answersDiv = document.getElementById("answers");
+    answersDiv.innerHTML = "";
+
+    quoteData.speakers.forEach((speaker, index) => {
+      const button = document.createElement("button");
+      button.textContent = speaker;
+      button.className = "answer-btn";
+      button.onclick = () => checkAnswer(index);
+      answersDiv.appendChild(button);
+    });
+  }
+
+  function checkAnswer(selectedIndex) {
+    const correctIndex = quotes[currentQuoteIndex].correct;
+    if (selectedIndex === correctIndex) {
+      score++;
+      document.getElementById("score").textContent = score;
+    }
+    currentQuoteIndex++;
+    showQuote();
+  }
+
+  function endGame() {
+    alert(`Game Over! Your score: ${score}`);
+    startGame();
+  }
+
+  // Start the game initially
+  startGame();
+</script>
+
+</body>
+</html>
