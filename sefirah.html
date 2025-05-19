@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sefirah Counter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0038b8;
+      color: white;
+      text-align: center;
+      padding: 1em;
+    }
+    .counter-container {
+      background-color: #0052cc;
+      padding: 1em;
+      border-radius: 8px;
+      max-width: 600px;
+      margin: auto;
+    }
+    .counter {
+      font-size: 1.5em;
+      margin-bottom: 1em;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Sefirat HaOmer Counter</h1>
+
+<div class="counter-container">
+  <div class="counter" id="counter"></div>
+</div>
+
+<script>
+  const hebrewNumbers = [
+    "אחד", "שני", "שלושה", "ארבעה", "חמישה", "שישה", "שבעה", "שמונה", "תשעה", "עשרה",
+    "אחד עשר", "שנים עשר", "שלושה עשר", "ארבעה עשר", "חמישה עשר", "שישה עשר", "שבעה עשר", "שמונה עשר", "תשעה עשר",
+    "עשרים", "עשרים ואחד", "עשרים ושנים", "עשרים ושלושה", "עשרים וארבעה", "עשרים וחמישה", "עשרים ושישה", "עשרים ושבעה", "עשרים ושמונה", "עשרים ותשעה",
+    "שלושים", "שלושים ואחד", "שלושים ושניים", "שלושים ושלושה", "שלושים וארבעה", "שלושים וחמישה", "שלושים ושישה", "שלושים ושבעה", "שלושים ושמונה", "שלושים ותשעה",
+    "ארבעים", "ארבעים ואחד", "ארבעים ושניים", "ארבעים ושלושה", "ארבעים וארבעה", "ארבעים וחמישה", "ארבעים ושישה", "ארבעים ושבעה", "ארבעים ושמונה", "ארבעים ותשעה"
+  ];
+
+  function getSefirahDay() {
+    const omerStart = new Date('2025-04-13T18:00:00'); // Start of Sefirah (2nd night of Pesach)
+    const now = new Date();
+    const msInDay = 24 * 60 * 60 * 1000;
+    const dayCount = Math.floor((now - omerStart) / msInDay) + 1;
+
+    if (dayCount < 1 || dayCount > 49) {
+      return "ספירת העומר הסתיימה";
+    }
+
+    return `היום ${hebrewNumbers[dayCount - 1]} יום לעומר`;
+  }
+
+  document.getElementById("counter").innerHTML = getSefirahDay();
+</script>
+
+</body>
+</html>
