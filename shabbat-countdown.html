@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shabbat Countdown - Chabad SOIS</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      max-width: 600px;
+      margin: 2rem auto;
+      font-family: Arial, sans-serif;
+      color: #002366;
+      background-color: #f0f8ff;
+      padding: 1rem;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 1rem;
+    }
+    select, button {
+      font-size: 1rem;
+      padding: 0.5rem;
+      margin: 1rem 0;
+    }
+    #countdown {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+    #error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Shabbat Countdown</h1>
+  <p>Countdown to candle lighting time based on your location.</p>
+</header>
+
+<main>
+  <label for="offset">Select candle lighting offset:</label>
+  <select id="offset">
+    <option value="18">18 minutes before sundown</option>
+    <option value="40">40 minutes before sundown</option>
+    <option value="plag">Plag HaMincha</option>
+  </select>
+
+  <div id="countdown">Calculating...</div>
+  <div id="error"></div>
+</main>
+
+<footer>
+  <p>3151 Stoney Street, Mohegan Lake, NY 10547</p>
+  <p>Text only: 857-271-1212</p>
+  <p>Email: <a href="mailto:askchabadsois@gmail.com">askchabadsois@gmail.com</a></p>
+</footer>
+
+<script>
+  const countdownEl = document.getElementById('countdown');
+  const errorEl = document.getElementById('error');
+  const offsetSelect = document.getElementById('offset');
+
+  // Helper: format time as HH:MM:SS
+  function formatTime(ms) {
+    if (ms < 0) return "Shabbat started!";
+    const totalSeconds = Math.floor(ms / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    return `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+  }
+
+  // Calculate Plag HaMincha based on sunrise, sunset
+  function calcPlag(sunrise, sunset) {
+    const daylightMs = sunset - sunrise;
+    const daylightMinutes = daylightMs / (1000 * 60);
+    const plagMinutes = daylightMinutes * 10.75 / 12;
+    return new Date(sunrise.getTime() + plagMinutes * 60 * 1000);
+  }
+
+  // Get today's sunset and sunrise using Geolocation and Sunrise-Sunset API
+  async function getSunTimes(lat, lng) {
+    const today = new Date().toISOString().slice(0,10);
+    try {
+      const response = await fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lng}&date=${today}&formatted=0`);
+      const data = await response.json();
+      if (data.status !== "OK") throw new Error("Sunrise-sunset API error");
+      return {
+        sunrise: new Date(data.results.sunrise),
+        sunset: new Date(data.results.sunset)
+      };
+    } catch(err) {
+      errorEl.textContent = "Error fetching sun times: " + err.message;
+      return null;
+    }
+  }
+
+  function getCandleLightingTime(sunrise, sunset, offset) {
+    if (offset === 'plag') {
+      return calcPlag(sunrise, sunset);
+    } else {
+      const minutesBefore = parseInt(offset, 10);
+      return new Date(sunset.getTime() - minutesBefore * 60 * 1000);
+    }
+  }
+
+  function updateCountdown(candleLightingTime) {
+    const now = new Date();
+    const diff = candleLightingTime - now;
+    countdownEl.textContent = formatTime(diff);
+  }
+
+  async function initCountdown() {
+    errorEl.textContent = "";
+    countdownEl.textContent = "Calculating...";
+    if (!navigator.geolocation) {
+      errorEl.textContent = "Geolocation is not supported by your browser.";
+      countdownEl.textContent = "";
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+
+      const sunTimes = await getSunTimes(lat, lng);
+      if (!sunTimes) {
+        countdownEl.textContent = "";
+        return;
+      }
+
+      let candleLightingTime = getCandleLightingTime(sunTimes.sunrise, sunTimes.sunset, offsetSelect.value);
+
+      // If candle lighting already passed today, get for next day
+      if (new Date() > candleLightingTime) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const dateStr = tomorrow.toISOString().slice(0,10);
+        try {
+          const response = await fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lng}&date=${dateStr}&formatted=0`);
+          const data = await response.json();
+          if (data.status !== "OK") throw new Error("Sunrise-sunset API error");
+          const sunrise = new Date(data.results.sunrise);
+          const sunset = new Date(data.results.sunset);
+          candleLightingTime = getCandleLightingTime(sunrise, sunset, offsetSelect.value);
+        } catch(err) {
+          errorEl.textContent = "Error fetching sun times for tomorrow: " + err.message;
+          countdownEl.textContent = "";
+          return;
+        }
+      }
+
+      function tick() {
+        updateCountdown(candleLightingTime);
+        if (new Date() >= candleLightingTime) {
+          countdownEl.textContent = "Shabbat started!";
+          clearInterval(intervalId);
+        }
+      }
+
+      tick();
+      const intervalId = setInterval(tick, 1000);
+    }, (err) => {
+      errorEl.textContent = "Geolocation error: " + err.message;
+      countdownEl.textContent = "";
+    });
+  }
+
+  offsetSelect.addEventListener('change', initCountdown);
+  initCountdown();
+</script>
+
+</body>
+</html>
