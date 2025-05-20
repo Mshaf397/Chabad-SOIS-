@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Name That Mitzvah</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fdf6e3;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #1565c0;
+    }
+    .question {
+      font-size: 1.2em;
+      margin: 20px 0;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      font-size: 1em;
+      cursor: pointer;
+      background-color: #e3f2fd;
+      border: 1px solid #90caf9;
+      border-radius: 5px;
+    }
+    .options button:hover {
+      background-color: #bbdefb;
+    }
+    .result {
+      font-weight: bold;
+      margin: 10px;
+    }
+    #score {
+      margin-top: 20px;
+    }
+    #timer {
+      font-size: 1.1em;
+      color: #d32f2f;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🕍 Name That Mitzvah</h1>
+    
+    <div id="start-menu">
+      <p>Select Difficulty:</p>
+      <button onclick="startGame('easy')">🟢 Easy</button>
+      <button onclick="startGame('medium')">🟡 Medium</button>
+      <button onclick="startGame('hard')">🔴 Hard</button>
+      <button onclick="startGame('challenge')">⚫ Challenge</button>
+    </div>
+    
+    <div id="question-container" class="hidden">
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="timer"></div>
+      <div class="result" id="result"></div>
+    </div>
+    
+    <div id="score"></div>
+    <button onclick="location.reload()">🔁 Play Again</button>
+  </div>
+
+  <script>
+    const questions = [
+      { question: "This mitzvah involves lighting candles before Shabbat.", choices: ["Shabbat Kiddush", "Shabbat Candles", "Havdalah", "Challah Baking"], answer: "Shabbat Candles" },
+      { question: "This mitzvah requires wrapping leather straps on the arm and head during weekday mornings.", choices: ["Tallit", "Tefillin", "Kippah", "Tzitzit"], answer: "Tefillin" },
+      { question: "This mitzvah includes building a temporary hut during a fall holiday.", choices: ["Sukkah", "Menorah", "Mezuzah", "Lulav"], answer: "Sukkah" },
+      { question: "This mitzvah includes blowing a ram's horn on Rosh Hashanah.", choices: ["Torah Reading", "Shofar", "Matzah", "Tashlich"], answer: "Shofar" },
+      { question: "This mitzvah involves placing a scroll on doorposts.", choices: ["Mezuzah", "Havdalah", "Lighting Menorah", "Lulav"], answer: "Mezuzah" },
+      { question: "This mitzvah involves separating a portion of dough for G-d.", choices: ["Hafrashat Challah", "Kiddush", "Korbanot", "Tefillah"], answer: "Hafrashat Challah" },
+      { question: "This mitzvah involves counting the days between Pesach and Shavuot.", choices: ["Birkat Hamazon", "Sefirat HaOmer", "Pesach Cleaning", "Hallel"], answer: "Sefirat HaOmer" },
+      { question: "This mitzvah involves giving 10% of one’s income to those in need.", choices: ["Tefillah", "Maaser", "Bikur Cholim", "Shmita"], answer: "Maaser" },
+      { question: "This mitzvah is fulfilled on Purim by giving food gifts to friends.", choices: ["Matanot LaEvyonim", "Mishloach Manot", "Taanit Esther", "Reading the Megillah"], answer: "Mishloach Manot" },
+      { question: "This mitzvah involves fasting and prayer on the holiest day of the year.", choices: ["Tisha B’Av", "Yom Kippur", "Shavuot", "Rosh Chodesh"], answer: "Yom Kippur" },
+      { question: "This mitzvah is performed by men, usually on the 8th day of life.", choices: ["Pidyon Haben", "Bar Mitzvah", "Brit Milah", "Upsherin"], answer: "Brit Milah" },
+      { question: "This mitzvah includes waving four plant species.", choices: ["Kiddush", "Lulav and Etrog", "Netilat Yadayim", "Sefirah"], answer: "Lulav and Etrog" },
+      { question: "This mitzvah involves honoring your parents.", choices: ["Kibbud Av VaEm", "Ahavat Yisrael", "Lashon Hara", "Kiddush Hashem"], answer: "Kibbud Av VaEm" },
+      { question: "This mitzvah involves lighting a special candleholder for 8 nights.", choices: ["Shabbat Candles", "Menorah", "Havdalah", "Mezuzah"], answer: "Menorah" },
+      { question: "This mitzvah involves studying sacred Jewish texts.", choices: ["Talmud Torah", "Shemita", "Korbanot", "Tehillim"], answer: "Talmud Torah" }
+    ];
+
+    const difficultyTimes = {
+      easy: 30,
+      medium: 20,
+      hard: 10,
+      challenge: 7
+    };
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    let countdown;
+    let shuffledQuestions = [];
+    let timeLimit = 30;
+
+    function startGame(level) {
+      timeLimit = difficultyTimes[level];
+      document.getElementById("start-menu").classList.add("hidden");
+      document.getElementById("question-container").classList.remove("hidden");
+      shuffledQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 15);
+      currentQuestionIndex = 0;
+      score = 0;
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const q = shuffledQuestions[currentQuestionIndex];
+      document.getElementById("question").textContent = `Q${currentQuestionIndex + 1}: ${q.question}`;
+      const optionsEl = document.getElementById("options");
+      optionsEl.innerHTML = "";
+      q.choices.forEach(choice => {
+        const btn = document.createElement("button");
+        btn.textContent = choice;
+        btn.onclick = () => selectAnswer(choice, q.answer);
+        optionsEl.appendChild(btn);
+      });
+      document.getElementById("result").textContent = "";
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = timeLimit;
+      document.getElementById("timer").textContent = `⏱ Time left: ${timeLeft}s`;
+      clearInterval(countdown);
+      countdown = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timer").textContent = `⏱ Time left: ${timeLeft}s`;
+        if (timeLeft <= 0) {
+          clearInterval(countdown);
+          document.getElementById("result").textContent = `⏳ Time's up! The correct answer was: ${shuffledQuestions[currentQuestionIndex].answer}`;
+          setTimeout(nextQuestion, 1500);
+        }
+      }, 1000);
+    }
+
+    function selectAnswer(choice, correctAnswer) {
+      clearInterval(countdown);
+      const resultEl = document.getElementById("result");
+      if (choice === correctAnswer) {
+        score++;
+        resultEl.textContent = "✅ Correct!";
+        resultEl.style.color = "green";
+      } else {
+        resultEl.textContent = `❌ Incorrect. Correct answer: ${correctAnswer}`;
+        resultEl.style.color = "red";
+      }
+      setTimeout(nextQuestion, 1200);
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < shuffledQuestions.length) {
+        showQuestion();
+      } else {
+        endGame();
+      }
+    }
+
+    function endGame() {
+      document.getElementById("question").textContent = "Game Over!";
+      document.getElementById("options").innerHTML = "";
+      document.getElementById("timer").textContent = "";
+      document.getElementById("result").textContent = "";
+      document.getElementById("score").textContent = `Your Score: ${score} / ${shuffledQuestions.length}`;
+    }
+  </script>
+</body>
+</html>
