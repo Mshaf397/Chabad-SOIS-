@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>What's the Bracha?</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f8ff; text-align: center; padding: 30px; }
+    h1 { color: #004080; }
+    #question { font-size: 1.5em; margin: 20px; }
+    .option { display: block; margin: 10px auto; padding: 10px 20px; background: #e0e0ff; border: 1px solid #888; cursor: pointer; width: 60%; border-radius: 5px; }
+    .option:hover { background: #d0d0ff; }
+    #score { margin-top: 20px; font-weight: bold; }
+    #startBtn, #nextBtn { margin: 15px; padding: 10px 20px; font-size: 1em; }
+  </style>
+</head>
+<body>
+  <h1>What's the Bracha?</h1>
+  <div id="game">
+    <div id="question"></div>
+    <div id="options"></div>
+    <button id="nextBtn" onclick="nextQuestion()" style="display:none;">Next Question</button>
+    <div id="score">Score: 0</div>
+  </div>
+
+  <script>
+    const questions = [
+      { question: "What is the bracha for an apple?", options: ["HaMotzi", "Shehakol", "HaEtz", "HaAdama"], answer: "HaEtz" },
+      { question: "What is the bracha for water?", options: ["HaMotzi", "Shehakol", "HaEtz", "HaAdama"], answer: "Shehakol" },
+      { question: "What is the bracha for bread?", options: ["HaMotzi", "Shehakol", "HaEtz", "HaAdama"], answer: "HaMotzi" },
+      { question: "What is the bracha for a carrot?", options: ["HaMotzi", "Shehakol", "HaEtz", "HaAdama"], answer: "HaAdama" },
+      { question: "What is the bracha for pasta?", options: ["Mezonot", "HaMotzi", "HaAdama", "Shehakol"], answer: "Mezonot" },
+      { question: "What is the bracha for grape juice?", options: ["HaEtz", "Mezonot", "HaGafen", "HaMotzi"], answer: "HaGafen" },
+      { question: "What is the bracha for rice?", options: ["HaAdama", "Mezonot", "HaMotzi", "Shehakol"], answer: "Mezonot" },
+      { question: "What is the bracha for wine?", options: ["HaMotzi", "HaEtz", "HaGafen", "Shehakol"], answer: "HaGafen" }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      document.getElementById("question").textContent = q.question;
+      const optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = '';
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.textContent = opt;
+        btn.className = "option";
+        btn.onclick = () => checkAnswer(opt);
+        optionsDiv.appendChild(btn);
+      });
+      document.getElementById("nextBtn").style.display = "none";
+    }
+
+    function checkAnswer(selected) {
+      const correct = questions[current].answer;
+      if (selected === correct) {
+        score++;
+        alert("Correct!");
+      } else {
+        alert("Incorrect! The correct answer is " + correct + ".");
+      }
+      document.getElementById("score").textContent = "Score: " + score;
+      document.getElementById("nextBtn").style.display = "inline-block";
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        alert("Game over! Your final score is " + score + "/" + questions.length);
+        current = 0;
+        score = 0;
+        loadQuestion();
+      }
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
