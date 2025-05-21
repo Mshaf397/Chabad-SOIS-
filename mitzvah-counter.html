@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mitzvah Counter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    h1, h2, h3 {
+      text-align: center;
+    }
+    input, button {
+      padding: 8px;
+      margin: 5px;
+      font-size: 1rem;
+    }
+    .log-entry {
+      background: #e0f7fa;
+      padding: 8px;
+      border-radius: 6px;
+      margin: 5px 0;
+    }
+    .goal-section {
+      margin-top: 20px;
+    }
+    .progress-bar {
+      background-color: #e0e0e0;
+      border-radius: 20px;
+      margin: 10px 0;
+      overflow: hidden;
+      height: 20px;
+    }
+    .progress-fill {
+      height: 100%;
+      background-color: #4caf50;
+      text-align: center;
+      color: white;
+      font-size: 12px;
+      line-height: 20px;
+      width: 0%;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mitzvah Counter</h1>
+
+  <h2>Log a Mitzvah</h2>
+  <input type="text" id="mitzvahDesc" placeholder="Description of mitzvah" />
+  <input type="date" id="mitzvahDate" />
+  <button onclick="logMitzvah()">Log Mitzvah</button>
+
+  <div class="goal-section">
+    <h2>Set Your Goal</h2>
+    <label>Daily Goal:</label>
+    <input type="number" id="dailyGoal" placeholder="e.g. 50" />
+    <label>Weekly Goal:</label>
+    <input type="number" id="weeklyGoal" placeholder="e.g. 800" />
+    <button onclick="saveGoals()">Save Goals</button>
+  </div>
+
+  <div class="goal-section">
+    <h3>Daily Progress</h3>
+    <div class="progress-bar"><div id="dailyProgress" class="progress-fill">0%</div></div>
+
+    <h3>Weekly Progress</h3>
+    <div class="progress-bar"><div id="weeklyProgress" class="progress-fill">0%</div></div>
+  </div>
+
+  <h2>Logged Mitzvahs</h2>
+  <button onclick="downloadLogs()">Download Logs (.csv)</button>
+  <div id="logContainer"></div>
+
+  <script>
+    let mitzvahs = JSON.parse(localStorage.getItem('mitzvahs')) || [];
+    let dailyGoal = parseInt(localStorage.getItem('dailyGoal')) || 0;
+    let weeklyGoal = parseInt(localStorage.getItem('weeklyGoal')) || 0;
+
+    document.getElementById('dailyGoal').value = dailyGoal || "";
+    document.getElementById('weeklyGoal').value = weeklyGoal || "";
+    document.getElementById('mitzvahDate').valueAsDate = new Date();
+
+    function logMitzvah() {
+      const desc = document.getElementById('mitzvahDesc').value.trim();
+      const date = document.getElementById('mitzvahDate').value;
+      if (!desc || !date) {
+        alert("Please enter a description and date.");
+        return;
+      }
+      mitzvahs.push({ desc, date });
+      localStorage.setItem('mitzvahs', JSON.stringify(mitzvahs));
+      document.getElementById('mitzvahDesc').value = "";
+      renderLog();
+      renderGoals();
+    }
+
+    function saveGoals() {
+      dailyGoal = parseInt(document.getElementById('dailyGoal').value) || 0;
+      weeklyGoal = parseInt(document.getElementById('weeklyGoal').value) || 0;
+      localStorage.setItem('dailyGoal', dailyGoal);
+      localStorage.setItem('weeklyGoal', weeklyGoal);
+      renderGoals();
+    }
+
+    function renderLog() {
+      const container = document.getElementById('logContainer');
+      container.innerHTML = '';
+      mitzvahs.slice().reverse().forEach(entry => {
+        const div = document.createElement('div');
+        div.className = 'log-entry';
+        div.textContent = `${entry.date} - ${entry.desc}`;
+        container.appendChild(div);
+      });
+    }
+
+    function countMitzvahsInPeriod(startDate, endDate) {
+      return mitzvahs.filter(m =>
+        new Date(m.date) >= startDate && new Date(m.date) <= endDate
+      ).length;
+    }
+
+    function renderGoals() {
+      const today = new Date();
+      const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const endOfDay = new Date(startOfDay);
+      endOfDay.setDate(endOfDay.getDate() + 1);
+
+      const startOfWeek = new Date(today);
+      startOfWeek.setDate(today.getDate() - today.getDay());
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(endOfWeek.getDate() + 7);
+
+      const dailyCount = countMitzvahsInPeriod(startOfDay, endOfDay);
+      const weeklyCount = countMitzvahsInPeriod(startOfWeek, endOfWeek);
+
+      updateProgressBar('dailyProgress', dailyCount, dailyGoal);
+      updateProgressBar('weeklyProgress', weeklyCount, weeklyGoal);
+    }
+
+    function updateProgressBar(id, value, goal) {
+      const percent = goal ? Math.min(100, Math.round((value / goal) * 100)) : 0;
+      const bar = document.getElementById(id);
+      bar.style.width = percent + "%";
+      bar.textContent = percent + "%";
+    }
+
+    function downloadLogs() {
+      const csv = "Date,Description\n" + mitzvahs.map(m => `"${m.date}","${m.desc}"`).join("\n");
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'mitzvah_log.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    renderLog();
+    renderGoals();
+  </script>
+</body>
+</html>
