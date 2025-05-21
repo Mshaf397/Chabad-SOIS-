@@ -9,13 +9,20 @@
     #countdown { font-size: 2em; margin-top: 20px; }
     .holiday-name { font-weight: bold; font-size: 1.5em; margin-bottom: 10px; }
     .error { color: red; }
-    select { font-size: 1em; padding: 5px; margin-top: 10px; }
+    input, select, button {
+      font-size: 1em;
+      padding: 8px;
+      margin: 10px;
+    }
   </style>
 </head>
 <body>
 
   <h2>Countdown to the Next Jewish Holiday</h2>
   <div class="holiday-name" id="holiday-name"></div>
+
+  <input type="text" id="location-input" placeholder="Enter city or ZIP code">
+  <button onclick="startCountdown()">Submit</button><br>
 
   <label for="mode">Candle-lighting Offset:</label>
   <select id="mode">
@@ -24,7 +31,7 @@
     <option value="plag">Plag HaMincha</option>
   </select>
 
-  <div id="countdown">Loading...</div>
+  <div id="countdown">Waiting for location...</div>
   <div class="error" id="error-msg"></div>
 
   <script>
@@ -43,6 +50,14 @@
     function getNextHoliday() {
       const now = new Date();
       return holidays.find(h => new Date(h.date) > now);
+    }
+
+    async function getLatLongFromLocation(query) {
+      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`;
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.length === 0) throw new Error("Location not found.");
+      return { lat: data[0].lat, lon: data[0].lon };
     }
 
     function fetchSunTimes(lat, lng, date, offsetMode) {
@@ -98,31 +113,28 @@
         `${days}d ${hours}h ${minutes}m ${seconds}s`;
     }
 
-    function startCountdown() {
+    async function startCountdown() {
+      const query = document.getElementById("location-input").value;
+      const offsetMode = document.getElementById("mode").value;
+      if (!query) {
+        document.getElementById("error-msg").innerText = "Please enter a location.";
+        return;
+      }
+
+      document.getElementById("error-msg").innerText = "";
       nextHoliday = getNextHoliday();
       if (!nextHoliday) {
         document.getElementById("countdown").innerText = "No upcoming holidays.";
         return;
       }
 
-      if (!navigator.geolocation) {
-        document.getElementById('error-msg').innerText = "Geolocation not supported.";
-        return;
+      try {
+        const coords = await getLatLongFromLocation(query);
+        fetchSunTimes(coords.lat, coords.lon, nextHoliday.date, offsetMode);
+      } catch (error) {
+        document.getElementById("error-msg").innerText = error.message;
       }
-
-      navigator.geolocation.getCurrentPosition(position => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        const offsetMode = document.getElementById("mode").value;
-        fetchSunTimes(lat, lng, nextHoliday.date, offsetMode);
-      }, () => {
-        document.getElementById('error-msg').innerText = "Location permission denied.";
-      });
     }
-
-    document.getElementById("mode").addEventListener("change", startCountdown);
-
-    startCountdown();
   </script>
 
 </body>
