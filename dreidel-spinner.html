@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Digital Dreidel Spinner</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 30px;
+      background: #f0f8ff;
+    }
+    h1 {
+      color: #2a4d69;
+    }
+    .dreidel {
+      font-size: 120px;
+      margin: 30px 0;
+      transition: transform 0.6s ease;
+      display: inline-block;
+    }
+    .dreidel.spin {
+      transform: rotate(720deg);
+    }
+    .result {
+      font-size: 1.5em;
+      margin: 20px 0;
+    }
+    button {
+      font-size: 1.2em;
+      padding: 10px 20px;
+      background: #0074d9;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .scores {
+      margin-top: 30px;
+      font-size: 1.2em;
+    }
+    input[type="number"] {
+      font-size: 1em;
+      padding: 6px;
+      width: 80px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎯 Digital Dreidel Spinner</h1>
+
+  <p>Enter number of spins (10-500): <input type="number" id="spinCount" min="10" max="500" value="10"></p>
+  <button onclick="startGame()">Start Game</button>
+
+  <div class="dreidel" id="dreidelFace">❓</div>
+  <div class="result" id="resultText">Click Start to begin!</div>
+  <button id="spinBtn" onclick="spinDreidel()" style="display:none;">Spin Dreidel</button>
+
+  <div class="scores">
+    <p>Total Score: <span id="totalScore">0</span></p>
+    <p>High Score: <span id="highScore">0</span></p>
+    <p>Spins Left: <span id="spinsLeft">0</span></p>
+  </div>
+
+  <script>
+    const outcomes = [
+      { symbol: 'נ', name: 'Nun', value: 0 },
+      { symbol: 'ג', name: 'Gimel', value: 2 },
+      { symbol: 'ה', name: 'Hey', value: 1 },
+      { symbol: 'ש', name: 'Shin', value: -1 }
+    ];
+
+    let totalScore = 0;
+    let highScore = parseInt(localStorage.getItem('dreidelHigh')) || 0;
+    let spinsLeft = 0;
+
+    document.getElementById('highScore').textContent = highScore;
+
+    function startGame() {
+      const count = parseInt(document.getElementById('spinCount').value);
+      if (isNaN(count) || count < 10 || count > 500) {
+        alert('Please enter a number between 10 and 500.');
+        return;
+      }
+      totalScore = 0;
+      spinsLeft = count;
+      document.getElementById('totalScore').textContent = totalScore;
+      document.getElementById('spinsLeft').textContent = spinsLeft;
+      document.getElementById('resultText').textContent = 'Ready to spin!';
+      document.getElementById('dreidelFace').textContent = '❓';
+      document.getElementById('spinBtn').style.display = 'inline-block';
+    }
+
+    function spinDreidel() {
+      if (spinsLeft <= 0) {
+        document.getElementById('resultText').textContent = 'Game over! Start a new game.';
+        document.getElementById('spinBtn').style.display = 'none';
+        return;
+      }
+
+      const dreidel = document.getElementById('dreidelFace');
+      dreidel.classList.remove('spin');
+      void dreidel.offsetWidth; // Trigger reflow for restart animation
+      dreidel.classList.add('spin');
+
+      setTimeout(() => {
+        const outcome = outcomes[Math.floor(Math.random() * outcomes.length)];
+        dreidel.textContent = outcome.symbol;
+        document.getElementById('resultText').textContent =
+          `${outcome.name} → ${outcome.value >= 0 ? '+' : ''}${outcome.value} points`;
+
+        totalScore += outcome.value;
+        spinsLeft--;
+
+        if (totalScore > highScore) {
+          highScore = totalScore;
+          localStorage.setItem('dreidelHigh', highScore);
+        }
+
+        document.getElementById('totalScore').textContent = totalScore;
+        document.getElementById('highScore').textContent = highScore;
+        document.getElementById('spinsLeft').textContent = spinsLeft;
+
+        if (spinsLeft === 0) {
+          document.getElementById('resultText').textContent += ' Game over!';
+          document.getElementById('spinBtn').style.display = 'none';
+        }
+      }, 600);
+    }
+  </script>
+</body>
+</html>
