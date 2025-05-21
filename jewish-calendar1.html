@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Interactive Jewish Calendar</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+      text-align: center;
+    }
+    h1 {
+      color: #004080;
+    }
+    #calendar {
+      margin-top: 20px;
+      text-align: left;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #aaa;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #004080;
+      color: white;
+    }
+    .holiday {
+      background-color: #cce5ff;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Interactive Jewish Calendar</h1>
+  <p>Showing upcoming Jewish dates and holidays for your location.</p>
+
+  <label for="yearInput">Select Year: </label>
+  <input type="number" id="yearInput" min="1900" max="2100" value="2025" />
+  <button onclick="loadCalendar()">Load Calendar</button>
+
+  <div id="calendar"></div>
+
+  <script>
+    async function loadCalendar() {
+      const year = document.getElementById('yearInput').value || new Date().getFullYear();
+      const url = `https://www.hebcal.com/hebcal?v=1&year=${year}&cfg=json&maj=on&min=on&mod=on&nx=on&ss=on&mf=on&c=on&geo=none&order=asc`;
+
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Network error');
+
+        const data = await res.json();
+        displayCalendar(data.items);
+      } catch (error) {
+        document.getElementById('calendar').innerHTML = `<p style="color:red;">Error loading calendar: ${error.message}</p>`;
+      }
+    }
+
+    function displayCalendar(items) {
+      let html = `<table>
+        <thead>
+          <tr><th>Date (Gregorian)</th><th>Date (Hebrew)</th><th>Event</th></tr>
+        </thead><tbody>`;
+
+      items.forEach(item => {
+        const date = new Date(item.date).toLocaleDateString();
+        const hebDate = item.hebrew || '';
+        const title = item.title;
+
+        const holidayClass = item.category === 'holiday' ? 'holiday' : '';
+
+        html += `<tr class="${holidayClass}">
+          <td>${date}</td>
+          <td>${hebDate}</td>
+          <td>${title}</td>
+        </tr>`;
+      });
+
+      html += '</tbody></table>';
+
+      document.getElementById('calendar').innerHTML = html;
+    }
+
+    // Load current year calendar on page load
+    document.getElementById('yearInput').value = new Date().getFullYear();
+    loadCalendar();
+  </script>
+</body>
+</html>
