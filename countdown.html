@@ -1,141 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Jewish Holiday Countdown</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 40px; }
-    h2 { font-size: 1.8em; }
+    body { font-family: Arial, sans-serif; text-align: center; margin: 30px; }
     #countdown { font-size: 2em; margin-top: 20px; }
-    .holiday-name { font-weight: bold; font-size: 1.5em; margin-bottom: 10px; }
-    .error { color: red; }
-    input, select, button {
-      font-size: 1em;
-      padding: 8px;
-      margin: 10px;
-    }
+    input[type="text"] { padding: 10px; font-size: 1em; width: 250px; }
+    button { padding: 10px 20px; font-size: 1em; }
   </style>
 </head>
 <body>
-
-  <h2>Countdown to the Next Jewish Holiday</h2>
-  <div class="holiday-name" id="holiday-name"></div>
-
-  <input type="text" id="location-input" placeholder="Enter city or ZIP code">
-  <button onclick="startCountdown()">Submit</button><br>
-
-  <label for="mode">Candle-lighting Offset:</label>
-  <select id="mode">
-    <option value="18">18 minutes before sunset</option>
-    <option value="40">40 minutes before sunset</option>
-    <option value="plag">Plag HaMincha</option>
-  </select>
-
-  <div id="countdown">Waiting for location...</div>
-  <div class="error" id="error-msg"></div>
+  <h1>Jewish Holiday Countdown</h1>
+  <p>Enter your city or ZIP code:</p>
+  <input type="text" id="locationInput" placeholder="e.g. 10001 or Jerusalem" />
+  <button onclick="fetchHoliday()">Start Countdown</button>
+  <div id="holidayInfo"></div>
+  <div id="countdown"></div>
 
   <script>
-    const holidays = [
-      { name: "Shavuot 5785", date: "2025-05-31" },
-      { name: "Rosh Hashanah 5786", date: "2025-09-22" },
-      { name: "Yom Kippur 5786", date: "2025-10-01" },
-      { name: "Sukkot 5786", date: "2025-10-06" },
-      { name: "Chanukah 5786", date: "2025-12-22" }
-    ];
+    async function fetchHoliday() {
+      const location = document.getElementById("locationInput").value;
+      if (!location) return alert("Please enter a location.");
 
-    let candleLightingTime = null;
-    let nextHoliday = null;
-    let intervalId = null;
+      const geoRes = await fetch(`https://geocode.maps.co/search?q=${encodeURIComponent(location)}`);
+      const geoData = await geoRes.json();
+      if (!geoData.length) return alert("Location not found.");
+      const lat = geoData[0].lat;
+      const lon = geoData[0].lon;
 
-    function getNextHoliday() {
-      const now = new Date();
-      return holidays.find(h => new Date(h.date) > now);
+      const today = new Date();
+      const year = today.getFullYear();
+      const hebcalURL = `https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&year=${year}&start=${today.toISOString().split('T')[0]}&geonameid=&s=on&m=50&tzid=America/New_York`;
+
+      const res = await fetch(hebcalURL);
+      const data = await res.json();
+      const holiday = data.items.find(item => item.category === "holiday");
+
+      if (!holiday) return alert("No upcoming holidays found.");
+
+      const holidayDate = new Date(holiday.date);
+      holidayDate.setDate(holidayDate.getDate() - 1);
+
+      const sunsetRes = await fetch(`https://api.sunrisesunset.io/json?lat=${lat}&lng=${lon}&date=${holidayDate.toISOString().split('T')[0]}`);
+      const sunsetData = await sunsetRes.json();
+
+      const sunsetTime = new Date(`${holidayDate.toISOString().split('T')[0]}T${sunsetData.results.sunset}`);
+      sunsetTime.setMinutes(sunsetTime.getMinutes() - 18); // 18 minutes before
+
+      document.getElementById("holidayInfo").innerHTML =
+        `<h2>Counting down to: ${holiday.title}</h2><p>(${sunsetTime.toLocaleString()})</p>`;
+
+      startCountdown(sunsetTime);
     }
 
-    async function getLatLongFromLocation(query) {
-      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`;
-      const response = await fetch(url);
-      const data = await response.json();
-      if (data.length === 0) throw new Error("Location not found.");
-      return { lat: data[0].lat, lon: data[0].lon };
-    }
+    function startCountdown(targetDate) {
+      const countdown = document.getElementById("countdown");
 
-    function fetchSunTimes(lat, lng, date, offsetMode) {
-      const apiUrl = `https://api.sunrisesunset.io/json?lat=${lat}&lng=${lng}&date=${date}&timezone=auto`;
-      fetch(apiUrl)
-        .then(res => res.json())
-        .then(data => {
-          const sunsetStr = data.results.sunset;
-          const sunriseStr = data.results.sunrise;
+      function update() {
+        const now = new Date();
+        const diff = targetDate - now;
+        if (diff <= 0) {
+          countdown.innerHTML = "Holiday has begun!";
+          clearInterval(interval);
+          return;
+        }
 
-          const sunset = new Date(`${date}T${sunsetStr}`);
-          const sunrise = new Date(`${date}T${sunriseStr}`);
-
-          let adjustedTime;
-
-          if (offsetMode === "plag") {
-            const minutesOfDaylight = (sunset - sunrise) / 60000;
-            const plagMinutes = (minutesOfDaylight * 10.75 / 12);
-            adjustedTime = new Date(sunrise.getTime() + plagMinutes * 60000);
-          } else {
-            const offset = parseInt(offsetMode, 10);
-            adjustedTime = new Date(sunset.getTime() - offset * 60000);
-          }
-
-          candleLightingTime = adjustedTime;
-          updateCountdown();
-          if (intervalId) clearInterval(intervalId);
-          intervalId = setInterval(updateCountdown, 1000);
-        })
-        .catch(() => {
-          document.getElementById('error-msg').innerText = "Couldn't fetch sunset time.";
-        });
-    }
-
-    function updateCountdown() {
-      if (!candleLightingTime || !nextHoliday) return;
-
-      const now = new Date();
-      const distance = candleLightingTime - now;
-
-      if (distance <= 0) {
-        document.getElementById("countdown").innerText = "It's time to light candles!";
-        return;
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / (1000 * 60)) % 60);
+        const seconds = Math.floor((diff / 1000) % 60);
+        countdown.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
       }
 
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((distance / (1000 * 60)) % 60);
-      const seconds = Math.floor((distance / 1000) % 60);
-
-      document.getElementById("holiday-name").innerText = `Next Holiday: ${nextHoliday.name}`;
-      document.getElementById("countdown").innerText =
-        `${days}d ${hours}h ${minutes}m ${seconds}s`;
-    }
-
-    async function startCountdown() {
-      const query = document.getElementById("location-input").value;
-      const offsetMode = document.getElementById("mode").value;
-      if (!query) {
-        document.getElementById("error-msg").innerText = "Please enter a location.";
-        return;
-      }
-
-      document.getElementById("error-msg").innerText = "";
-      nextHoliday = getNextHoliday();
-      if (!nextHoliday) {
-        document.getElementById("countdown").innerText = "No upcoming holidays.";
-        return;
-      }
-
-      try {
-        const coords = await getLatLongFromLocation(query);
-        fetchSunTimes(coords.lat, coords.lon, nextHoliday.date, offsetMode);
-      } catch (error) {
-        document.getElementById("error-msg").innerText = error.message;
-      }
+      update();
+      const interval = setInterval(update, 1000);
     }
   </script>
-
 </body>
 </html>
