@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Candle Lighting Time Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+      background: #f0f8ff;
+      color: #003366;
+    }
+    h1 {
+      text-align: center;
+    }
+    label, select, input, button {
+      font-size: 1rem;
+      margin-top: 10px;
+      display: block;
+      width: 100%;
+      max-width: 300px;
+    }
+    button {
+      margin-top: 20px;
+      background-color: #004080;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 30px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-align: center;
+      color: #0059b3;
+    }
+    #error {
+      color: red;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Candle Lighting Time Calculator</h1>
+  <label for="locationInput">Enter City or ZIP Code:</label>
+  <input type="text" id="locationInput" placeholder="e.g. Mohegan Lake or 10547" />
+
+  <label for="offsetSelect">Select Candle Lighting Time:</label>
+  <select id="offsetSelect">
+    <option value="18">18 minutes before sunset</option>
+    <option value="40">40 minutes before sunset</option>
+    <option value="plag">Plag HaMincha</option>
+  </select>
+
+  <button onclick="calculateCandleLighting()">Calculate Candle Lighting Time</button>
+
+  <div id="result"></div>
+  <div id="error"></div>
+
+  <script>
+    // Utility: Convert "HH:MM" string to minutes from midnight
+    function timeStrToMinutes(t) {
+      const [h, m] = t.split(':').map(Number);
+      return h * 60 + m;
+    }
+
+    // Utility: Convert minutes from midnight to HH:MM AM/PM string
+    function minutesToTimeStr(mins) {
+      let h = Math.floor(mins / 60);
+      let m = mins % 60;
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      if (h > 12) h -= 12;
+      if (h === 0) h = 12;
+      return `${h}:${m.toString().padStart(2, '0')} ${ampm}`;
+    }
+
+    // Get next Friday date (for candle lighting)
+    function getNextFriday() {
+      const today = new Date();
+      const day = today.getDay();
+      const daysUntilFriday = (5 - day + 7) % 7 || 7; // next Friday
+      const nextFriday = new Date(today);
+      nextFriday.setDate(today.getDate() + daysUntilFriday);
+      return nextFriday;
+    }
+
+    // Geocode city or ZIP to lat/lon using Open-Meteo geocoding API
+    async function geocodeLocation(query) {
+      const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Geocoding API error');
+      const data = await response.json();
+      if (!data.results || data.results.length === 0) throw new Error('Location not found');
+      return { lat: data.results[0].latitude, lon: data.results[0].longitude };
+    }
+
+    // Fetch sunset and sunrise for a date and location from Open-Meteo API
+    async function fetchSunTimes(lat, lon, dateISO) {
+      // API expects date format YYYY-MM-DD
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=sunrise,sunset&timezone=auto&start_date=${dateISO}&end_date=${dateISO}`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Sun time API error');
+      const data = await response.json();
+      const sunrise = data.daily.sunrise[0]; // ISO string
+      const sunset = data.daily.sunset[0];   // ISO string
+      return { sunrise, sunset };
+    }
+
+    // Calculate minutes of daylight = sunset - sunrise in minutes
+    function daylightMinutes(sunriseISO, sunsetISO) {
+      const sunrise = new Date(sunriseISO);
+      const sunset = new Date(sunsetISO);
+      return (sunset - sunrise) / (1000 * 60);
+    }
+
+    // Calculate Plag HaMincha time in minutes from midnight: sunrise + (daylight * 10.75/12)
+    function calcPlagHaMincha(sunriseISO, sunsetISO) {
+      const sunrise = new Date(sunriseISO);
+      const sunriseMins = sunrise.getHours() * 60 + sunrise.getMinutes();
+      const dayMins = daylightMinutes(sunriseISO, sunsetISO);
+      const plagMins = sunriseMins + (dayMins * 10.75 / 12);
+      return plagMins;
+    }
+
+    async function calculateCandleLighting() {
+      const location = document.getElementById('locationInput').value.trim();
+      const offset = document.getElementById('offsetSelect').value;
+      const resultDiv = document.getElementById('result');
+      const errorDiv = document.getElementById('error');
+
+      resultDiv.textContent = '';
+      errorDiv.textContent = '';
+
+      if (!location) {
+        errorDiv.textContent = 'Please enter a city or ZIP code.';
+        return;
+      }
+
+      try {
+        // Geocode location
+        const { lat, lon } = await geocodeLocation(location);
+        // Get next Friday date
+        const nextFriday = getNextFriday();
+        const dateISO = nextFriday.toISOString().split('T')[0];
+
+        // Fetch sunrise and sunset
+        const { sunrise, sunset } = await fetchSunTimes(lat, lon, dateISO);
+
+        let candleLightingMins;
+
+        if (offset === 'plag') {
+          // Calculate Plag HaMincha time
+          candleLightingMins = calcPlagHaMincha(sunrise, sunset);
+          candleLightingMins = Math.floor(candleLightingMins); // round down
+        } else {
+          // Calculate candle lighting time by subtracting offset minutes from sunset
+          const sunsetDate = new Date(sunset);
+          candleLightingMins = sunsetDate.getHours() * 60 + sunsetDate.getMinutes() - parseInt(offset, 10);
+        }
+
+        const candleLightingTime = minutesToTimeStr(candleLightingMins);
+
+        resultDiv.textContent = `Candle lighting time for ${nextFriday.toDateString()} in ${location} is ${candleLightingTime}.`;
+
+      } catch (err) {
+        errorDiv.textContent = `Error: ${err.message}`;
+      }
+    }
+  </script>
+</body>
+</html>
