@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Jewish Holiday Countdown</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 40px; }
+    h2 { font-size: 1.8em; }
+    #countdown { font-size: 2em; margin-top: 20px; }
+    .holiday-name { font-weight: bold; font-size: 1.5em; margin-bottom: 10px; }
+    .error { color: red; }
+    select { font-size: 1em; padding: 5px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+  <h2>Countdown to the Next Jewish Holiday</h2>
+  <div class="holiday-name" id="holiday-name"></div>
+
+  <label for="mode">Candle-lighting Offset:</label>
+  <select id="mode">
+    <option value="18">18 minutes before sunset</option>
+    <option value="40">40 minutes before sunset</option>
+    <option value="plag">Plag HaMincha</option>
+  </select>
+
+  <div id="countdown">Loading...</div>
+  <div class="error" id="error-msg"></div>
+
+  <script>
+    const holidays = [
+      { name: "Shavuot 5785", date: "2025-06-01" },
+      { name: "Rosh Hashanah 5786", date: "2025-09-22" },
+      { name: "Yom Kippur 5786", date: "2025-10-01" },
+      { name: "Sukkot 5786", date: "2025-10-06" },
+      { name: "Chanukah 5786", date: "2025-12-22" }
+    ];
+
+    let candleLightingTime = null;
+    let nextHoliday = null;
+    let intervalId = null;
+
+    function getNextHoliday() {
+      const now = new Date();
+      return holidays.find(h => new Date(h.date) > now);
+    }
+
+    function fetchSunTimes(lat, lng, date, offsetMode) {
+      const apiUrl = `https://api.sunrisesunset.io/json?lat=${lat}&lng=${lng}&date=${date}&timezone=auto`;
+      fetch(apiUrl)
+        .then(res => res.json())
+        .then(data => {
+          const sunsetStr = data.results.sunset;
+          const sunriseStr = data.results.sunrise;
+
+          const sunset = new Date(`${date}T${sunsetStr}`);
+          const sunrise = new Date(`${date}T${sunriseStr}`);
+
+          let adjustedTime;
+
+          if (offsetMode === "plag") {
+            const minutesOfDaylight = (sunset - sunrise) / 60000;
+            const plagMinutes = (minutesOfDaylight * 10.75 / 12);
+            adjustedTime = new Date(sunrise.getTime() + plagMinutes * 60000);
+          } else {
+            const offset = parseInt(offsetMode, 10);
+            adjustedTime = new Date(sunset.getTime() - offset * 60000);
+          }
+
+          candleLightingTime = adjustedTime;
+          updateCountdown();
+          if (intervalId) clearInterval(intervalId);
+          intervalId = setInterval(updateCountdown, 1000);
+        })
+        .catch(() => {
+          document.getElementById('error-msg').innerText = "Couldn't fetch sunset time.";
+        });
+    }
+
+    function updateCountdown() {
+      if (!candleLightingTime || !nextHoliday) return;
+
+      const now = new Date();
+      const distance = candleLightingTime - now;
+
+      if (distance <= 0) {
+        document.getElementById("countdown").innerText = "It's time to light candles!";
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((distance / (1000 * 60)) % 60);
+      const seconds = Math.floor((distance / 1000) % 60);
+
+      document.getElementById("holiday-name").innerText = `Next Holiday: ${nextHoliday.name}`;
+      document.getElementById("countdown").innerText =
+        `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    }
+
+    function startCountdown() {
+      nextHoliday = getNextHoliday();
+      if (!nextHoliday) {
+        document.getElementById("countdown").innerText = "No upcoming holidays.";
+        return;
+      }
+
+      if (!navigator.geolocation) {
+        document.getElementById('error-msg').innerText = "Geolocation not supported.";
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(position => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        const offsetMode = document.getElementById("mode").value;
+        fetchSunTimes(lat, lng, nextHoliday.date, offsetMode);
+      }, () => {
+        document.getElementById('error-msg').innerText = "Location permission denied.";
+      });
+    }
+
+    document.getElementById("mode").addEventListener("change", startCountdown);
+
+    startCountdown();
+  </script>
+
+</body>
+</html>
