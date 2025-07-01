@@ -7,7 +7,7 @@ body {
 }
 
 header {
-    background-color: #002366;
+    background-color: #238a66;
     color: #ffffff;
     padding: 1rem;
     text-align: center;
@@ -50,7 +50,7 @@ header nav a:hover {
 }
 
 footer {
-    background-color: #002366;
+    background-color: #238a66;
     color: #ffffff;
     padding: 1rem;
     text-align: center;
