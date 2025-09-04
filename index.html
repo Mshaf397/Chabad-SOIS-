@@ -54,6 +54,44 @@
         </ul>
     </section>
 
+    <section id="today-in-jewish-history">
+  <h2>Today in Jewish History</h2>
+  <div id="tijh-date"></div>
+  <ul id="tijh-events"></ul>
+
+  <script>
+  (function(){
+    const DATA_URL = "/assets/jewish-history.json"; // adjust path if needed
+    const now = new Date();
+
+    // Hebrew date
+    let heb = "Hebrew date unavailable", hebKey = null;
+    try {
+      const fmt = new Intl.DateTimeFormat("en-u-ca-hebrew",{day:"numeric",month:"long",year:"numeric"});
+      heb = fmt.format(now); // e.g. "11 Elul 5785"
+      const parts = heb.split(" ");
+      if (parts.length >= 2) hebKey = parts[1] + " " + parts[0]; // "Elul 11"
+    } catch(e){}
+
+    document.getElementById("tijh-date").textContent = heb;
+
+    fetch(DATA_URL)
+      .then(r => r.json())
+      .then(EVENTS => {
+        const items = hebKey && EVENTS[hebKey] ? EVENTS[hebKey] : [];
+        const list = document.getElementById("tijh-events");
+        list.innerHTML = items.length
+          ? items.map(e=>`<li><b>${e.title}</b>: ${e.desc}</li>`).join("")
+          : "<li>No recorded events for this Hebrew date.</li>";
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById("tijh-events").innerHTML = "<li>Could not load history data.</li>";
+      });
+  })();
+  </script>
+</section>
+
 <script>
   function showExtras() {
     window.location.href = "extras.html";
