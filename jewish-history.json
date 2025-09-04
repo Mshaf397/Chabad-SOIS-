@@ -1,14 +1,20 @@
 {
-  "Elul 11": [
-    {
-      "title": "Refining Days of Elul",
-      "desc": "The King is in the field — a call to kindness and self-assessment."
-    }
-  ],
-  "Tishrei 1": [
-    {
-      "title": "Rosh Hashanah",
-      "desc": "The Jewish New Year, a day of prayer, reflection, and the sounding of the shofar."
-    }
-  ]
+    "Tishrei 1": [
+        {
+            "title": "Rosh Hashanah",
+            "desc": "The Jewish New Year, a day of prayer, reflection, and the sounding of the shofar."
+        }
+    ],
+    "Tishrei 1": [
+        {
+            "title": "Creation of mankind (1 AM/3760 BCE)",
+            "desc": "Adam and Eve were created."
+        }
+    ],
+    "Elul 11": [
+        {
+            "title": "Rashab's marriage (1875/5635)",
+            "desc": "The Rebbe Rashab married Rebbetzin Shterna Sara."
+        }
+    ]
 }
