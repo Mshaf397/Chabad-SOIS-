@@ -2,106 +2,269 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
     <title>Chabad SOIS</title>
+    <!-- Load Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7; /* Light background for the whole page */
+        }
+    </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col">
 
-    <header>
-        <h1>Chabad SOIS</h1>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="about.html">About</a>
-            <a href="events.html">Events</a>
-            <a href="learning.html">Learning Resources</a>
-            <a href="contact.html">Contact</a>
-            <a href="donate.html">Donate</a>
-            <a href="extras.html">Fun Extras</a>
-        </nav>
+    <header class="bg-indigo-700 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center">
+            <h1 class="text-3xl font-bold mb-3 md:mb-0">Chabad SOIS</h1>
+            <nav class="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm font-medium">
+                <a href="index.html" class="hover:text-indigo-200 transition duration-300 border-b-2 border-white">Home</a>
+                <a href="about.html" class="hover:text-indigo-200 transition duration-300">About</a>
+                <a href="events.html" class="hover:text-indigo-200 transition duration-300">Events</a>
+                <a href="learning.html" class="hover:text-indigo-200 transition duration-300">Learning Resources</a>
+                <a href="contact.html" class="hover:text-indigo-200 transition duration-300">Contact</a>
+                <a href="donate.html" class="hover:text-indigo-200 transition duration-300">Donate</a>
+                <a href="extras.html" class="hover:text-indigo-200 transition duration-300">Fun Extras</a>
+            </nav>
+        </div>
     </header>
 
-    <section class="featured-event">
-        <div class="event-text">
-            <h2>Featured Event: Chanukah Party!!!</h2>
-            <p>Join us this Chanukah for a party!</p>
-            <p>Menorah lighting will be at 5:00 PM on December 18th, followed by classic Chanukah activites from 5:30 to 7:00 PM.</p>
+    <main class="flex-grow container mx-auto p-4 md:p-8 space-y-8">
+
+        <!-- Featured Event -->
+        <section class="featured-event bg-orange-100 p-6 md:p-10 rounded-xl shadow-lg border-l-4 border-orange-500">
+            <h2 class="text-3xl font-extrabold text-orange-700 mb-3">Featured Event: Chanukah Party!!!</h2>
+            <div class="space-y-2 text-gray-700">
+                <p class="text-lg">Join us this Chanukah for a party!</p>
+                <p>Menorah lighting will be at 5:00 PM on December 18th, followed by classic Chanukah activites from 5:30 to 7:00 PM.</p>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Dynamic Upcoming Events Section -->
+            <section class="events-preview lg:col-span-2 bg-white p-6 rounded-xl shadow-xl border border-gray-100">
+                <h2 class="text-2xl font-bold text-indigo-800 mb-4 border-b pb-2">Upcoming Events</h2>
+                <ul id="upcoming-events-list" class="space-y-3">
+                    <!-- Events will be dynamically injected here -->
+                    <li class="text-center text-gray-500 italic p-4">Loading events...</li>
+                </ul>
+                <div id="event-loading-status" class="text-center text-sm mt-4 hidden">
+                    <p class="text-indigo-500">Connecting to real-time updates...</p>
+                </div>
+            </section>
+
+            <!-- Newsletter Signup -->
+            <section class="newsletter lg:col-span-1 bg-indigo-50 p-6 rounded-xl shadow-md border border-indigo-200">
+                <h2 class="text-2xl font-bold text-indigo-800 mb-4">Newsletter Signup</h2>
+                <p class="text-gray-700">Stay updated! Email <a href="mailto:chabadsois@gmail.com" class="text-indigo-600 hover:text-indigo-800 font-medium underline transition duration-300">chabadsois@gmail.com</a> to join our newsletter.</p>
+            </section>
         </div>
-    </section>
 
-    <section class="newsletter">
-        <h2>Newsletter Signup</h2>
-        <p>Stay updated! Email <a href="mailto:chabadsois@gmail.com">chabadsois@gmail.com</a> to join our newsletter.</p>
-    </section>
+        <!-- Learning Resources -->
+        <section class="learning-preview bg-white p-6 rounded-xl shadow-xl border border-gray-100">
+            <h2 class="text-2xl font-bold text-indigo-800 mb-4 border-b pb-2">Learning Resources</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <a href="article1.html" class="block p-4 bg-gray-50 rounded-lg shadow-sm hover:bg-gray-100 transition duration-300 border-l-4 border-indigo-400">
+                    <p class="font-semibold text-gray-800">The Power of Shabbat</p>
+                    <p class="text-sm text-gray-600">Discover the beauty of the weekly rest day.</p>
+                </a>
+                <a href="article2.html" class="block p-4 bg-gray-50 rounded-lg shadow-sm hover:bg-gray-100 transition duration-300 border-l-4 border-indigo-400">
+                    <p class="font-semibold text-gray-800">Jewish Holidays 101</p>
+                    <p class="text-sm text-gray-600">A quick guide to the major holidays.</p>
+                </a>
+                <a href="article3.html" class="block p-4 bg-gray-50 rounded-lg shadow-sm hover:bg-gray-100 transition duration-300 border-l-4 border-indigo-400">
+                    <p class="font-semibold text-gray-800">Kosher Basics</p>
+                    <p class="text-sm text-gray-600">What makes food kosher?</p>
+                </a>
+                <a href="article4.html" class="block p-4 bg-gray-50 rounded-lg shadow-sm hover:bg-gray-100 transition duration-300 border-l-4 border-indigo-400">
+                    <p class="font-semibold text-gray-800">The 39 Melachot</p>
+                    <p class="text-sm text-gray-600">Learn about the forbidden labors of Shabbos.</p>
+                </a>
+            </div>
+        </section>
 
-    <section class="events-preview">
-        <h2>Upcoming Events</h2>
-        <ul>
-            <li>Shabbos Farbrengen - October 25th</li>
-            <li>Shabbos Farbrengen - November 1st</li>
-            <li>Shabbos Farbrengen - November 8th</li>
-        </ul>
-    </section>
+        <!-- Today in Jewish History (Kept the original script structure for this section) -->
+        <section id="today-in-jewish-history" class="bg-yellow-50 p-6 rounded-xl shadow-md border-l-4 border-yellow-500">
+            <h2 class="text-2xl font-bold text-yellow-800 mb-2">Today in Jewish History</h2>
+            <div id="tijh-date" class="text-xl font-semibold text-gray-700 mb-3"></div>
+            <ul id="tijh-events" class="list-disc list-inside space-y-1 text-gray-600"></ul>
 
-    <section class="learning-preview">
-        <h2>Learning Resources</h2>
-        <ul>
-            <li><a href="article1.html">The Power of Shabbat - Discover the beauty of the weekly rest day.</a></li>
-            <li><a href="article2.html">Jewish Holidays 101 - A quick guide to the major holidays.</a></li>
-            <li><a href="article3.html">Kosher Basics - What makes food kosher?</a></li>
-            <li><a href="article4.html">The 39 Melachot - Learn about the forbidden labors of Shabbos.</a></li>
-        </ul>
-    </section>
+            <script>
+                // This script handles the "Today in Jewish History" functionality.
+                (function(){
+                    const DATA_URL = "/jewish-history.json"; // adjust path if needed
+                    const now = new Date();
 
-    <section id="today-in-jewish-history">
-  <h2>Today in Jewish History</h2>
-  <div id="tijh-date"></div>
-  <ul id="tijh-events"></ul>
+                    // Hebrew date logic
+                    let heb = "Hebrew date unavailable", hebKey = null;
+                    try {
+                        // Use Hebrew calendar to determine date
+                        const fmt = new Intl.DateTimeFormat("en-u-ca-hebrew",{day:"numeric",month:"long",year:"numeric"});
+                        heb = fmt.format(now); // e.g. "11 Elul 5785"
+                        const parts = heb.split(" ");
+                        if (parts.length >= 2) hebKey = parts[1] + " " + parts[0]; // "Elul 11"
+                    } catch(e){}
 
-  <script>
-  (function(){
-    const DATA_URL = "/jewish-history.json"; // adjust path if needed
-    const now = new Date();
+                    document.getElementById("tijh-date").textContent = heb;
 
-    // Hebrew date
-    let heb = "Hebrew date unavailable", hebKey = null;
-    try {
-      const fmt = new Intl.DateTimeFormat("en-u-ca-hebrew",{day:"numeric",month:"long",year:"numeric"});
-      heb = fmt.format(now); // e.g. "11 Elul 5785"
-      const parts = heb.split(" ");
-      if (parts.length >= 2) hebKey = parts[1] + " " + parts[0]; // "Elul 11"
-    } catch(e){}
+                    fetch(DATA_URL)
+                        .then(r => r.json())
+                        .then(EVENTS => {
+                            const items = hebKey && EVENTS[hebKey] ? EVENTS[hebKey] : [];
+                            const list = document.getElementById("tijh-events");
+                            list.innerHTML = items.length
+                                ? items.map(e=>`<li class="hover:text-yellow-900 transition duration-200"><b>${e.title}</b>: ${e.desc}</li>`).join("")
+                                : "<li class='italic'>No recorded events for this Hebrew date.</li>";
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            document.getElementById("tijh-events").innerHTML = "<li class='text-red-500'>Could not load history data.</li>";
+                        });
+                })();
+            </script>
+        </section>
 
-    document.getElementById("tijh-date").textContent = heb;
+    </main>
 
-    fetch(DATA_URL)
-      .then(r => r.json())
-      .then(EVENTS => {
-        const items = hebKey && EVENTS[hebKey] ? EVENTS[hebKey] : [];
-        const list = document.getElementById("tijh-events");
-        list.innerHTML = items.length
-          ? items.map(e=>`<li><b>${e.title}</b>: ${e.desc}</li>`).join("")
-          : "<li>No recorded events for this Hebrew date.</li>";
-      })
-      .catch(err => {
-        console.error(err);
-        document.getElementById("tijh-events").innerHTML = "<li>Could not load history data.</li>";
-      });
-  })();
-  </script>
-</section>
+    <footer class="bg-indigo-900 text-white mt-8 p-6 text-center">
+        <div class="container mx-auto">
+            <p class="mb-2">3151 Stoney Street, Mohegan Lake, NY 10547</p>
+            <p class="text-indigo-300 hover:text-white transition duration-300"><a href="extras.html">Fun Extras</a></p>
+        </div>
+    </footer>
 
-<script>
-  function showExtras() {
-    window.location.href = "extras.html";
-  }
-</script>
-    
-    <footer>
-  <p>3151 Stoney Street, Mohegan Lake, NY 10547</p>
-  <p><a href="extras.html">Fun Extras</a></p>
-</footer>
+    <!-- Firebase SDK Imports (for real-time events) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, query, onSnapshot, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // Global variables provided by the environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-chabad-app';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        if (Object.keys(firebaseConfig).length > 0) {
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            const auth = getAuth(app);
+
+            // 1. Authentication
+            async function authenticate() {
+                try {
+                    if (initialAuthToken) {
+                        await signInWithCustomToken(auth, initialAuthToken);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                    console.log("Firebase authenticated successfully.");
+                } catch (error) {
+                    console.error("Firebase authentication failed:", error);
+                }
+            }
+
+            // 2. Real-time Event Listener
+            function setupRealtimeEvents() {
+                const eventListEl = document.getElementById('upcoming-events-list');
+                const loadingStatusEl = document.getElementById('event-loading-status');
+                const eventsCollectionPath = `/artifacts/${appId}/public/data/events`;
+                
+                loadingStatusEl.classList.remove('hidden');
+
+                // Get the current date and format it for comparison (ISO format)
+                const now = new Date();
+                // Set time to the very start of today to ensure today's events are not missed.
+                now.setHours(0, 0, 0, 0);
+                const todayISO = now.toISOString();
+
+                // Create a query to get only future events (events that haven't passed today)
+                // We use greater than or equal to the current date string
+                const eventsQuery = query(
+                    collection(db, eventsCollectionPath),
+                    where('date', '>=', todayISO)
+                );
+
+                onSnapshot(eventsQuery, (snapshot) => {
+                    const events = [];
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        // Assuming 'date' field is a Firestore Timestamp or ISO string
+                        const eventDate = new Date(data.date);
+                        
+                        // Client-side filtering and sorting for safety and display purposes:
+                        // 1. Filter out events that might have slipped through the query (edge cases)
+                        if (eventDate >= now) {
+                            events.push({ id: doc.id, ...data, dateObj: eventDate });
+                        }
+                    });
+
+                    // Sort events chronologically (A to B)
+                    events.sort((a, b) => a.dateObj - b.dateObj);
+
+                    loadingStatusEl.classList.add('hidden');
+
+                    if (events.length === 0) {
+                        eventListEl.innerHTML = '<li class="text-center text-gray-500 italic p-4 bg-gray-100 rounded-lg">Check back soon for new events!</li>';
+                        return;
+                    }
+
+                    // Render the list
+                    eventListEl.innerHTML = events.map(event => {
+                        const dateString = event.dateObj.toLocaleDateString('en-US', {
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                        const dayOfWeek = event.dateObj.toLocaleDateString('en-US', {
+                            weekday: 'long'
+                        });
+
+                        return `
+                            <li class="p-4 bg-white rounded-lg shadow-md border-l-4 border-indigo-500 flex flex-col sm:flex-row justify-between items-start sm:items-center transition duration-300 hover:bg-indigo-50 hover:shadow-lg">
+                                <span class="font-semibold text-lg text-indigo-900">${event.name}</span>
+                                <span class="text-sm text-indigo-600 mt-1 sm:mt-0">${dayOfWeek}, ${dateString}</span>
+                            </li>
+                        `;
+                    }).join('');
+
+                    console.log("Events updated successfully.");
+                }, (error) => {
+                    console.error("Error fetching real-time events:", error);
+                    eventListEl.innerHTML = '<li class="text-center text-red-500 italic p-4 bg-red-50 rounded-lg">Failed to load events. Please check connection.</li>';
+                    loadingStatusEl.classList.add('hidden');
+                });
+            }
+
+            // Start the application
+            authenticate().then(setupRealtimeEvents);
+
+            // Optional: Helper function to add mock data if the database is empty
+            async function addMockEvents() {
+                 try {
+                    const mockEvents = [
+                        { name: "Shabbos Farbrengen", date: "2025-11-09T19:00:00Z" }, // Tomorrow
+                        { name: "Mega Challah Bake", date: "2025-11-16T18:00:00Z" },
+                        { name: "Pizza and Parsha Study", date: "2025-11-23T19:30:00Z" },
+                        { name: "Shabbos Farbrengen", date: "2025-11-30T19:00:00Z" },
+                        // This one should be filtered out because the date is in the past
+                        { name: "Past Event Test", date: "2024-10-01T10:00:00Z" }, 
+                    ];
+                    // You would only run this once to seed the data
+                    // import { addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+                    // for (const event of mockEvents) {
+                    //     await addDoc(collection(db, eventsCollectionPath), event);
+                    // }
+                    // console.log("Mock events added (run this only once!).");
+                 } catch(e) {
+                     console.warn("Could not add mock events:", e);
+                 }
+            }
+            // addMockEvents(); // Uncomment this line if you want to initialize the database with mock data.
+
+        } else {
+            document.getElementById('upcoming-events-list').innerHTML = '<li class="text-center text-red-500 italic p-4 bg-red-50 rounded-lg">Database configuration missing. Dynamic updates disabled.</li>';
+        }
+    </script>
 </body>
 </html>
