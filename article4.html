@@ -1,68 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>The 39 Melachot - Chabad SOIS</title>
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The 39 Melachot - Chabad SOIS</title>
+    <!-- Load Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font and base styling */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7; /* Light background for the whole page */
+        }
+        /* Style for descriptive paragraphs to match the theme */
+        .article-content p {
+            margin-bottom: 1rem;
+            line-height: 1.75;
+            color: #374151; /* Gray-700 */
+        }
+        /* Ensure nested lists are properly formatted */
+        .article-content ul, .article-content ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+    </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col">
 
-<header>
-  <h1>Chabad SOIS</h1>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="about.html">About</a>
-    <a href="events.html">Events</a>
-    <a href="learning.html">Learning Resources</a>
-    <a href="contact.html">Contact</a>
-    <a href="donate.html">Donate</a>
-  </nav>
-</header>
+    <!-- Header Section (Consistent Theme) -->
+    <header class="bg-indigo-700 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center">
+            <h1 class="text-3xl font-bold mb-3 md:mb-0">Chabad SOIS</h1>
+            <nav class="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm font-medium">
+                <a href="index.html" class="hover:text-indigo-200 transition duration-300">Home</a>
+                <a href="about.html" class="hover:text-indigo-200 transition duration-300">About</a>
+                <a href="events.html" class="hover:text-indigo-200 transition duration-300">Events</a>
+                <a href="learning.html" class="hover:text-indigo-200 transition duration-300">Learning Resources</a>
+                <a href="contact.html" class="hover:text-indigo-200 transition duration-300">Contact</a>
+                <a href="donate.html" class="hover:text-indigo-200 transition duration-300">Donate</a>
+                <a href="extras.html" class="hover:text-indigo-200 transition duration-300">Fun Extras</a>
+            </nav>
+        </div>
+    </header>
 
-<main>
-  <section class="article-content" style="padding: 2rem; max-width: 800px; margin: auto; color: #002366;">
-	<h2>The 39 Melachot, Forbidden Labors on Shabbat</h2>
-    <p>In this article, we will discuss the 39 forbidden labors of Shabbat. We will also discuss common subcategories of these labors.</p>
-    <p>1. Zorei'a/Planting</p>
-    <p>Planting, the av melachah of zorei'a, is forbidden on Shabbat, and includes any activity that promotes vegetative growth. One transgresses the melachah even if the planting produces no results; dropping a seed or pit on soil, for example. Since the seed could germinate and produce a tree or a plant, dropping the seed is considered an act of planting (Shulchan Aruch HaRav 336:10). It is important to note that we follow the halachic guidelines even when they seem obscure. For example, one may not place a potted plant onto grass on Shabbat, since the plant can now draw nutrients from the ground, improving its growth. Moreover, the plant is muktzeh, meaning it cannot be moved at all over Shabbat.</p>
-    <p>All primary categories of work (avos melachos, sing. av melacha) are derived from labors done in the Mishkan (Tabernacle).</p>
-    <p>Various herbs were planted to create the dyes used in the Mishkan (Rashi on Shabbat 73a). Additionally, wheat was planted to produce flour for some of the sacrifices and for the lechem hapanim, the showbread, which was baked and used in the Mishkan on a weekly basis. This is the opinion of Rabbi Hai Gaon.</p>
-    <p>Toladot, subcategories, of zorei'a include watering grass (Shulchan Aruch HaRav 252:16), pruning trees, weeding to improve growth of existing plants, and fumigating plants with pesticides.</p>
-    <p>Common activities to avoid include turning on a sprinkler system, moving a plant to a place where it will get more sun, dropping a pit or fruit seed on soil, and having a water fight on dirt or grass.</p>
-    <p>2. Choresh/Plowing</p>
-    <p>Plowing, the av melachah of choresh, is forbidden on Shabbat. When one plows, the plowshare cuts into the hard soil, loosening it, making it fertile ground in which to plant. Any other action which accomplishes this is included in the melachah of choresh. There is no minimum amount of soil required, since one can plant a seed even in a small area of earth that has been properly conditioned (Eglai Tal, Choresh 2). There is also no specific method in which the melachah must be done. Even scraping the ground with one’s shoe or a heavy chair—if it loosens the earth—is considered choresh.</p>
-    <p>Plowing was part of the process to grow the herbs used to produce certain dyes for the Mishkan (Rashi on Shabbat 73a). Others source the melachah to the plowing used to produce wheat for some of the sacrifices and for the lechem hapanim, the showbread, which was baked on a weekly basis. This is the opinion of Rabbi Hai Gaon.</p>
-    <p>Toladot of choresh include weeding plants (Maimonides, Mishneh Torah, Shabbat 8:1), pouring water on the ground to make it soft and suitable for planting (Shulchan Aruch HaRav 336:9), leveling the ground by filling in holes or removing pebbles (Mishneh Torah, Shabbat 21:2), and applying soil enhancers and fertilizers (Chayei Adam, Shabbat 10:3).</p>
-    <p>Common activities to avoid include dragging a heavy chair along the ground, raking the lawn, and scraping one's shoe against the ground.</p>
-    <p>3. Kotzeir/Reaping</p>
-    <p>Reaping, the av melachah of kotzeir, is forbidden on Shabbat and includes any activity which uses a tool to detach a plant, branch, or fruit from its source of growth. Inhibiting or preventing growth is not included. For example, neither taking flowers out of a vase nor shutting off a sprinkler system is included in kotzeir, even though both actions prevent further vegetative growth. Simply put, kotzeir has nothing to do with stopping something from growing; it is the simple act of severing a plant from its source of growth (Shulchan Aruch HaRav 336:19). The Jerusalem Talmud (Shabbat 48b, ch. 7 Halacha 2) understands that kotzeir can be applied to humans and animals as well. For example, shearing wool from a sheep removes the wool from its source of growth, as does cutting one’s hair and nails. Halacha does not accept this definition in its final analysis, and although shearing wool and cutting nails are forbidden on Shabbat, they fall into the category of gozez (shearing), rather than kotzeir.</p>
-    <p>Kotzair was done when they picked the herbs to make dyes for the Mishkan (Rashi on Shabbat 73a) and cut wheat to produce flour for some of the sacrifices and for the lechem hapanim, the showbread, which was baked in the Mishkan on a weekly basis. This is the opinion of Rabbi Hai Gaon.</p>
-    <p>Toladot of kotzair include lifting a perforated flower pot from the ground (because the plant in the pot is drawing sustenance from the ground) (Eglai Tal Kotzer 7), shaking a tree to cause the fruit to fall (ibid.) (because this is not the normal way of picking fruit, it only resembles the av melacha), and picking a fruit or vegetable with one's hand (if it is normally picked with a tool) (Eglai Tal Kotzer 5).</p>
-    <p>Our Sages forbade some activities that can lead to one violating the melacha of kotzair. These include: Making use of trees, including climbing, sitting, or leaning against a tree. Even placing an object on the tree is forbidden. If a person left an item on a tree, he or she should not remove it on Shabbat. Someone who deliberately climbs a tree on Shabbat is forbidden from coming down until Shabbat ends, unless it is absolutely necessary (Eruvin 100a, Eglai Tal Kotzer 22), smelling fruit which is still attached to the tree. This restriction does not extend to flowers, since one can fully enjoy a flower by smelling it while it remains attached to the ground. Fruit, however, one may be tempted to pick and eat (Eglai Tal Kotzer 20, Shulchan Aruch HaRav 336:16), eating fruit that fell from a tree on Shabbat (Eglai Tal Kotzer 21), and riding or using an animal on Shabbat (Eglai Tal Kotzer 23). The main concern here is that while riding a horse one might break off a branch from a nearby tree to use as a prod. Although this concern only arises when dealing with animals that can be ridden, the Sages forbade the use of all animals on Shabbat to avoid confusion as to which animals are forbidden and which are permitted. Use of an animal in this context includes anything from riding in a horse-drawn carriage to covering an animal with a blanket. For practical guidance, pet owners should consult a rabbi to determine exactly what may and may not be done for the animal on Shabbat.</p>
-    <p>Common activities to avoid include climbing trees, picking flowers, lying in a hammock or swing that is directly attached to a tree, playing in a tree house, and picking up fruit that is lying on the ground under a tree.</p>
-    <p>4. Me'ameir/Gathering</p>
-    <p>Gathering produce, the av melachah of me’ameir, is forbidden on Shabbat (Eglai Tal, Me'amer 1, Shulchan Aruch Harav 340:15). In the Mishkan, me’ameir involved gathering produce in the field after it was cut. Since the acts which are forbidden on Shabbat are derived from the way the melachot were done in the Mishkan, there are a number of restrictions to this melachah.</p>
-    <p>Gidulei Karka - The produce must have grown from the ground. One only transgresses the biblical prohibition of me’ameir if he gathers produce which grew from the ground (Shabbat 73b), including non-food items like twigs or herbs.</p>
-    <p>Makom Gidulo - The produce must be gathered where it grew. Me’ameir only applies when the produce is gathered at the location of growing, because the normal time for gathering and binding produce is when it is still in the field. There are, however, other forms of me’ameir that come into play even after the produce has been harvested, which are considered toladot. Generally speaking, me’ameir is not an issue at all indoors, since it is normal for the house to be swept and for things to be organized. Such activities, therefore, have no semblance of a melachah.</p>
-    <p>One is not liable for gathering produce which had been previously gathered (Tossfot Rid Shabbat, Perek Klal Gadol 11). The logic for this is that once the produce has been collected it is considered removed from its place of growth. Thus, even if scattered again, one who collects it is not considered to be collecting it from its place of growth.</p>
-    <p>Me'ameir was done in the Mishkan as follows:</p>
-    <p>The herbs and plants used in the dyes needed for the Mishkan were gathered after being cut (Rashi, Shabbat 73a). Additionally, the wheat for the flour used in some of the sacrifices and for the lechem hapanim, the showbread, was gathered after being harvested. This is the opinion of Rav Hai Gaon.</p>
-    <p>Toladot of me'ameir</p>
-    <p>Although the classic method of me’ameir involves collecting produce while it is still in the field, there are other forms which are done indoors. Since they only resemble the way me’ameir was done in the Mishkan, they are considered toladot (Shulchan Aruch Harav 340:15). For example, piercing holes into dates and threading them onto a string. The dates have been gathered together, and even though it’s being done indoors, since that is the place it would normally be done it is still considered me'ameir. A more practical example would be making a fruit kebab out of whole, uncut fruits. Pressing fruits together to form a solid mass (such as a ring of pressed figs) is another toladah. In these cases we don’t say that one is not liable because the produce was previously gathered, since the act of me'ameir being done the second time accomplishes more than what the first act of me'ameir accomplished.</p>
-    <p>Rabbinic safeguards against transgressing me'ameir</p>
-    <p>The Sages extended the prohibition of me’ameir to include the gathering of any items, even if they did not grow from the ground. Nevertheless, like the Biblical prohibition, the gathering is forbidden only at the place the items were produced. For example, packaging items at the plant where they were produced (Shulchan Aruch HaRav 340:15). The Sages also forbade gathering produce which is widely scattered in a backyard or field, even if it did not grow there and there is no issue of me’ameir (Shabbat 143b). (If the produce is not widely scattered, it may be collected, provided it is not mixed with pebbles and dirt, which could present an issue of boreir, selecting, another melachah.) Maimonides attributes this prohibition to the concern that people might pack the fruits together tightly, which is an act of me’ameir even if it is not done in the place where the fruits grew (Rambam, Mishneh Torah, Hilchos Shabbos 21:11). Others explain that in order to preserve the sanctity and holiness of Shabbat, the Sages forbade certain activities which involve too much physical exertion. This activity is one such example (Levush 335:5).</p>
-    <p>Common activities to avoid include gathering sticks in the garden to form a pile (this is aside from the issue of muktzeh involved), collecting fruits that fell from a tree and putting them in a basket, and making a fruit kebab with whole, uncut fruit.</p>
-    <p>5. Dosh/Threshing</p>
-    <p>Threshing, the av melachah of dosh, is forbidden on Shabbat. In the Mishkan, dosh was performed by treading or using a flail to beat produce in order to remove the seeds. As such, the av melachah of dosh refers to threshing using a utensil designed for that purpose, or treading on the produce (Shulchan Aruch HaRav 305:28).</p>
-    <p>Essentially, dosh is the removal of foods or liquids from where they are encased. (Rambam, Mishneh Torah, Hilchos Shabbos 8:7 writes that wounding someone and causing them to bleed is also considered dosh.) Although this would seem to include most fruits and vegetables that we peel, like bananas and oranges, that is not the case. The threshing in the Mishkan was done while the produce was still in the field. Most of our fruits and vegetables are peeled just before they are eaten, and would in fact be rotten if peeled so far in advance. Since the manner is incomparable, it is not included in the melachah. Moreover, the peels are directly attached and can be considered part of the fruit itself. Therefore, the removal of their peels is no different than cutting the fruit, which is obviously permitted. (See Eshel Avraham 319:8, Igros Moshe Orach Chaim Volume 1:125.) One should be careful not to use a peeler on Shabbat, however, and use a knife instead. (See Shabbat k'Halacha chapter 13 note 5.)</p>
-    <p>Flour was needed for the lechem hapanim—the showbread which was baked on a weekly basis—and for some of the sacrifices. To produce the flour, the wheat needed to be threshed after it was harvested. This is the opinion of Rav Hai Gaon. Plants were also threshed to make dyes for parts of the Mishkan (Rashi, Shabbos 73a).</p>
-    <p>Mefarek, a common toladah of dosh (Mishneh Torah 21:12), includes:</p>
-    <ol>
-      <li>Removing peas or beans from an inedible pod. (The Alter Rebbe in his Piskei Siddur adds that someone who wishes to be extra scrupulous should avoid taking peas out of a pod even if the pod is edible.)</li>
-      <li>Milking a cow (Shabbat 95a; Mishneh Torah Hilchot Shabbat 8:7; Shulchan Aruch Harav 305:28).</li>
-      <li>Squeezing grapes for juice and olives for oil (Shulchan Aruch HaRav 320:1, 3).</li>
-      <li>Wringing liquids out of clothing or material. If the liquid is clear, then wringing out the garment is forbidden under the melachah of melaben - laundering. If the liquid is not clear, one would only be liable for mefarek if the person wanted to use the liquid he or she is squeezing out. Practically, since most people don’t care for the liquids they squeeze out of their clothes, wringing out such a garment is a rabbinic prohibition (Shulchan Aruch HaRav 320:21).</li>
-    </ol>
-    <p>Rabbinic enactments include squeezing <strong>any</strong> fruit (Mishneh Torah 21:12, Shulchan Aruch HaRav 320:1, 3), as well as defrosting liquids (Shabbat 51b; Mishneh Torah 21:13; Shulchan Aruch Harav 320:16).</p>
-    <p>Common activities to avoid include squeezing out a napkin when wiping up a spill, squeezing lemon into a cup of tea, squuezing out a sponge, and defrosting milk bottles.</p>
+    <!-- Main Content Area -->
+    <main class="flex-grow container mx-auto p-4 md:p-8">
+        
+        <section class="article-content bg-white p-6 md:p-10 rounded-xl shadow-2xl max-w-4xl mx-auto border-t-8 border-indigo-600">
+            
+            <h2 class="text-4xl font-extrabold text-indigo-800 mb-6 border-b pb-2">The 39 Melachot, Forbidden Labors on Shabbat</h2>
+            
+            <p class="text-lg text-gray-700 mb-6 leading-relaxed italic border-l-4 border-orange-400 pl-4 bg-orange-50 p-2 rounded-md">
+                In this article, we will discuss the 39 forbidden labors of Shabbat. We will also discuss common subcategories of these labors.
+            </p>
+
+            <p class="text-gray-700 mb-6">
+                All primary categories of work (<strong class="text-indigo-700">avos melachos</strong>, sing. av melacha) are derived from labors done in the Mishkan (Tabernacle).
+            </p>
+
+            <!-- 1. Zorei'a/Planting -->
+            <h3 class="text-2xl font-bold text-orange-600 border-b mt-8 pb-1">1. Zorei'a / Planting</h3>
+            <p>Planting, the av melachah of <strong class="text-indigo-700">zorei'a</strong>, is forbidden on Shabbat, and includes any activity that promotes vegetative growth. One transgresses the melachah even if the planting produces no results; dropping a seed or pit on soil, for example. Since the seed could germinate and produce a tree or a plant, dropping the seed is considered an act of planting (Shulchan Aruch HaRav 336:10). It is important to note that we follow the halachic guidelines even when they seem obscure. For example, one may not place a potted plant onto grass on Shabbat, since the plant can now draw nutrients from the ground, improving its growth. Moreover, the plant is muktzeh, meaning it cannot be moved at all over Shabbat.</p>
+            <p class="text-indigo-700 font-semibold mt-4">Source of the Labor:</p>
+            <p>Various herbs were planted to create the dyes used in the Mishkan (Rashi on Shabbat 73a). Additionally, wheat was planted to produce flour for some of the sacrifices and for the lechem hapanim, the showbread, which was baked and used in the Mishkan on a weekly basis. This is the opinion of Rabbi Hai Gaon.</p>
+            <p class="text-indigo-700 font-semibold mt-4">Toladot (Subcategories) of Zorei'a include:</p>
+            <ul class="list-disc ml-6 text-gray-700 bg-indigo-50 p-3 rounded-lg">
+                <li>Watering grass (Shulchan Aruch HaRav 252:16)</li>
+                <li>Pruning trees</li>
+                <li>Weeding to improve growth of existing plants</li>
+                <li>Fumigating plants with pesticides.</li>
+            </ul>
+            <p class="text-indigo-700 font-semibold mt-4">Common activities to avoid:</p>
+            <ul class="list-disc ml-6 text-gray-700">
+                <li>Turning on a sprinkler system</li>
+                <li>Moving a plant to a place where it will get more sun</li>
+                <li>Dropping a pit or fruit seed on soil</li>
+                <li>Having a water fight on dirt or grass.</li>
+            </ul>
+            
+            <!-- 2. Choresh/Plowing -->
+            <h3 class="text-2xl font-bold text-orange-600 border-b mt-8 pb-1">2. Choresh / Plowing</h3>
+            <p>Plowing, the av melachah of <strong class="text-indigo-700">choresh</strong>, is forbidden on Shabbat. When one plows, the plowshare cuts into the hard soil, loosening it, making it fertile ground in which to plant. Any other action which accomplishes this is included in the melachah of choresh. There is no minimum amount of soil required, since one can plant a seed even in a small area of earth that has been properly conditioned (Eglai Tal, Choresh 2). There is also no specific method in which the melachah must be done. Even scraping the ground with one’s shoe or a heavy chair—if it loosens the earth—is considered choresh.</p>
+            <p class="text-indigo-700 font-semibold mt-4">Source of the Labor:</p>
+            <p>Plowing was part of the process to grow the herbs used to produce certain dyes for the Mishkan (Rashi on Shabbat 73a). Others source the melachah to the plowing used to produce wheat for some of the sacrifices and for the lechem hapanim, the showbread, which was baked on a weekly basis. This is the opinion of Rabbi Hai Gaon.</p>
+            <p class="text-indigo-700 font-semibold mt-4">Toladot (Subcategories) of Choresh include:</p>
+            <ul class="list-disc ml-6 text-gray-700 bg-indigo-50 p-3 rounded-lg">
+                <li>Weeding plants (Maimonides, Mishneh Torah, Shabbat 8:1)</li>
+                <li>Pouring water on the ground to make it soft and suitable for planting (Shulchan Aruch HaRav 336:9)</li>
+                <li>Leveling the ground by filling in holes or removing pebbles (Mishneh Torah, Shabbat 21:2)</li>
+                <li>Applying soil enhancers and fertilizers (Chayei Adam, Shabbat 10:3).</li>
+            </ul>
+            <p class="text-indigo-700 font-semibold mt-4">Common activities to avoid:</p>
+            <ul class="list-disc ml-6 text-gray-700">
+                <li>Dragging a heavy chair along the ground</li>
+                <li>Raking the lawn</li>
+                <li>Scraping one's shoe against the ground.</li>
+            </ul>
+            
+            <!-- 3. Kotzeir/Reaping -->
+            <h3 class="text-2xl font-bold text-orange-600 border-b mt-8 pb-1">3. Kotzeir / Reaping</h3>
+            <p>Reaping, the av melachah of <strong class="text-indigo-700">kotzeir</strong>, is forbidden on Shabbat and includes any activity which uses a tool to detach a plant, branch, or fruit from its source of growth. Inhibiting or preventing growth is not included. For example, neither taking flowers out of a vase nor shutting off a sprinkler system is included in kotzeir, even though both actions prevent further vegetative growth. Simply put, kotzeir has nothing to do with stopping something from growing; it is the simple act of severing a plant from its source of growth (Shulchan Aruch HaRav 336:19). The Jerusalem Talmud (Shabbat 48b, ch. 7 Halacha 2) understands that kotzeir can be applied to humans and animals as well. Halacha does not accept this definition in its final analysis, and although shearing wool and cutting nails are forbidden on Shabbat, they fall into the category of gozez (shearing), rather than kotzeir.</p>
+            <p class="text-indigo-700 font-semibold mt-4">Source of the Labor:</p>
+            <p>Kotzair was done when they picked the herbs to make dyes for the Mishkan (Rashi on Shabbat 73a) and cut wheat to produce flour for some of the sacrifices and for the lechem hapanim, the showbread, which was baked in the Mishkan on a weekly basis. This is the opinion of Rabbi Hai Gaon.</p>
+            <p class="text-indigo-700 font-semibold mt-4">Toladot (Subcategories) of Kotzeir include:</p>
+            <ul class="list-disc ml-6 text-gray-700 bg-indigo-50 p-3 rounded-lg">
+                <li>Lifting a perforated flower pot from the ground (because the plant in the pot is drawing sustenance from the ground) (Eglai Tal Kotzer 7)</li>
+                <li>Shaking a tree to cause the fruit to fall (ibid.) (because this is not the normal way of picking fruit, it only resembles the av melacha)</li>
+                <li>Picking a fruit or vegetable with one's hand (if it is normally picked with a tool) (Eglai Tal Kotzer 5).</li>
+            </ul>
+            <p class="text-indigo-700 font-semibold mt-4">Rabbinic safeguards against transgressing Kotzeir:</p>
+            <ul class="list-disc ml-6 text-gray-700">
+                <li>Making use of trees, including climbing, sitting, or leaning against a tree.</li>
+                <li>Smelling fruit which is still attached to the tree.</li>
+                <li>Eating fruit that fell from a tree on Shabbat.</li>
+                <li>Riding or using an animal on Shabbat (due to concern one might break off a branch to use as a prod).</li>
+            </ul>
+            <p class="text-indigo-700 font-semibold mt-4">Common activities to avoid:</p>
+            <ul class="list-disc ml-6 text-gray-700">
+                <li>Climbing trees</li>
+                <li>Picking flowers</li>
+                <li>Lying in a hammock or swing that is directly attached to a tree</li>
+                <li>Playing in a tree house</li>
+                <li>Picking up fruit that is lying on the ground under a tree.</li>
+            </ul>
+
+            <!-- 4. Me'ameir/Gathering -->
+            <h3 class="text-2xl font-bold text-orange-600 border-b mt-8 pb-1">4. Me'ameir / Gathering</h3>
+            <p>Gathering produce, the av melachah of <strong class="text-indigo-700">me’ameir</strong>, is forbidden on Shabbat (Eglai Tal, Me'amer 1, Shulchan Aruch Harav 340:15). In the Mishkan, me’ameir involved gathering produce in the field after it was cut. One only transgresses the biblical prohibition if he gathers produce which grew from the ground (<strong class="text-indigo-700">Gidulei Karka</strong>) and is gathered at the location of growing (<strong class="text-indigo-700">Makom Gidulo</strong>).</p>
+            <p class="text-indigo-700 font-semibold mt-4">Source of the Labor:</p>
+            <p>The herbs and plants used in the dyes needed for the Mishkan were gathered after being cut (Rashi, Shabbat 73a). Additionally, the wheat for the flour used in some of the sacrifices and for the lechem hapanim, the showbread, was gathered after being harvested. This is the opinion of Rav Hai Gaon.</p>
+            <p class="text-indigo-700 font-semibold mt-4">Toladot (Subcategories) of Me'ameir include:</p>
+            <ul class="list-disc ml-6 text-gray-700 bg-indigo-50 p-3 rounded-lg">
+                <li>Piercing holes into dates and threading them onto a string.</li>
+                <li>Making a fruit kebab out of whole, uncut fruits.</li>
+                <li>Pressing fruits together to form a solid mass (such as a ring of pressed figs).</li>
+            </ul>
+            <p class="text-indigo-700 font-semibold mt-4">Common activities to avoid:</p>
+            <ul class="list-disc ml-6 text-gray-700">
+                <li>Gathering sticks in the garden to form a pile (aside from the issue of muktzeh involved)</li>
+                <li>Collecting fruits that fell from a tree and putting them in a basket</li>
+                <li>Making a fruit kebab with whole, uncut fruit.</li>
+            </ul>
+
+            <!-- 5. Dosh/Threshing -->
+            <h3 class="text-2xl font-bold text-orange-600 border-b mt-8 pb-1">5. Dosh / Threshing</h3>
+            <p>Threshing, the av melachah of <strong class="text-indigo-700">dosh</strong>, is forbidden on Shabbat. Essentially, dosh is the removal of foods or liquids from where they are encased. The threshing in the Mishkan was done while the produce was still in the field. Most of our fruits and vegetables are peeled just before they are eaten, and the peels are considered part of the fruit, so peeling them is permitted. However, one should be careful not to use a peeler on Shabbat, and use a knife instead.</p>
+            <p class="text-indigo-700 font-semibold mt-4">Source of the Labor:</p>
+            <p>Flour was needed for the lechem hapanim—the showbread which was baked on a weekly basis—and for some of the sacrifices. To produce the flour, the wheat needed to be threshed after it was harvested. Plants were also threshed to make dyes for parts of the Mishkan.</p>
+            <p class="text-indigo-700 font-semibold mt-4">Mefarek, a common toladah of dosh (Mishneh Torah 21:12), includes:</p>
+            <ol class="list-decimal ml-6 text-gray-700 bg-indigo-50 p-3 rounded-lg">
+                <li>Removing peas or beans from an inedible pod.</li>
+                <li>Milking a cow (Shabbat 95a; Mishneh Torah Hilchot Shabbat 8:7; Shulchan Aruch Harav 305:28).</li>
+                <li>Squeezing grapes for juice and olives for oil (Shulchan Aruch HaRav 320:1, 3).</li>
+                <li>Wringing liquids out of clothing or material.</li>
+            </ol>
+            <p class="text-indigo-700 font-semibold mt-4">Rabbinic enactments include:</p>
+            <ul class="list-disc ml-6 text-gray-700">
+                <li>Squeezing <strong class="text-indigo-700">any</strong> fruit (Mishneh Torah 21:12, Shulchan Aruch HaRav 320:1, 3)</li>
+                <li>Defrosting liquids (Shabbat 51b; Mishneh Torah 21:13; Shulchan Aruch Harav 320:16).</li>
+            </ul>
+            <p class="text-indigo-700 font-semibold mt-4">Common activities to avoid:</p>
+            <ul class="list-disc ml-6 text-gray-700">
+                <li>Squeezing out a napkin when wiping up a spill</li>
+                <li>Squeezing lemon into a cup of tea</li>
+                <li>Squeezing out a sponge</li>
+                <li>Defrosting milk bottles.</li>
+            </ul>
+            
+            <!-- Citation -->
+            <p class="mt-10 text-xs text-gray-500 border-t pt-4">
+                *The content and structure of this article are based on the extensive halachic guides to the 39 Melachot available on Chabad.org.
+            </p>
+
+        </section>
+    </main>
+
+    <!-- Footer Section (Consistent Theme) -->
+    <footer class="bg-indigo-900 text-white mt-8 p-6 text-center">
+        <div class="container mx-auto space-y-1">
+            <p>3151 Stoney Street, Mohegan Lake, NY 10547</p>
+            <p class="text-indigo-300 hover:text-white transition duration-300"><a href="extras.html">Fun Extras</a></p>
+        </div>
+    </footer>
+
+</body>
+</html>
