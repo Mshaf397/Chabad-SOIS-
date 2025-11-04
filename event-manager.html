@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chabad SOIS - Event Manager</title>
+    <!-- Load Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; 
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-2xl bg-white p-8 rounded-xl shadow-2xl border-t-8 border-indigo-600">
+        <h1 class="text-3xl font-bold text-indigo-800 mb-6 border-b pb-2">Event Manager Console</h1>
+        <p class="text-gray-600 mb-6">Use this tool to add new upcoming events. They will appear instantly on the main website.</p>
+
+        <div class="space-y-4">
+            <div>
+                <label for="event-name" class="block text-sm font-medium text-gray-700 mb-1">Event Name</label>
+                <input type="text" id="event-name" placeholder="E.g., Purim Feast" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+            </div>
+            <div>
+                <label for="event-date" class="block text-sm font-medium text-gray-700 mb-1">Gregorian Date & Time (Crucial for filtering)</label>
+                <input type="datetime-local" id="event-date" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+            </div>
+            
+            <button id="add-event-btn" class="w-full bg-indigo-600 text-white p-3 rounded-lg font-semibold text-lg hover:bg-indigo-700 transition duration-300 shadow-md transform hover:scale-[1.01]">
+                Add Event to Database
+            </button>
+
+            <div id="admin-message" class="mt-4 p-3 rounded-lg text-center font-medium"></div>
+        </div>
+        
+        <div class="mt-8 text-center">
+            <a href="index.html" class="text-indigo-600 hover:text-indigo-800 transition duration-300 text-sm underline">← Back to Main Website</a>
+        </div>
+
+    </div>
+
+    <!-- Firebase SDK Imports (WRITE functionality) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables provided by the environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-chabad-app';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        const eventsCollectionPath = `/artifacts/${appId}/public/data/events`;
+        let db;
+        let auth;
+
+        // 1. Authentication
+        async function authenticate() {
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                console.log("Firebase authenticated successfully.");
+                setupAddEventListener();
+            } catch (error) {
+                console.error("Firebase authentication failed:", error);
+                document.getElementById('admin-message').textContent = "Authentication failed. Cannot connect to database.";
+                document.getElementById('admin-message').className = "mt-4 p-3 bg-red-100 text-red-700 rounded-lg text-center font-medium";
+            }
+        }
+        
+        // 2. Function to Add Event to Database
+        function setupAddEventListener() {
+            const addButton = document.getElementById('add-event-btn');
+            const eventNameInput = document.getElementById('event-name');
+            const eventDateInput = document.getElementById('event-date');
+            const adminMessage = document.getElementById('admin-message');
+
+            addButton.addEventListener('click', async () => {
+                const name = eventNameInput.value.trim();
+                const dateLocal = eventDateInput.value;
+
+                if (!name || !dateLocal) {
+                    adminMessage.textContent = "Error: Please enter both event name and date/time.";
+                    adminMessage.className = "mt-4 p-3 bg-red-100 text-red-700 rounded-lg text-center font-medium";
+                    return;
+                }
+
+                try {
+                    // Convert local datetime input to ISO format for consistent storage
+                    const dateISO = new Date(dateLocal).toISOString();
+                    
+                    await addDoc(collection(db, eventsCollectionPath), {
+                        name: name,
+                        date: dateISO
+                    });
+
+                    adminMessage.textContent = `Success! Added event: "${name}". Check the main page!`;
+                    adminMessage.className = "mt-4 p-3 bg-green-100 text-green-700 rounded-lg text-center font-medium";
+
+                    eventNameInput.value = '';
+                    eventDateInput.value = '';
+
+                } catch (error) {
+                    console.error("Error adding document: ", error);
+                    adminMessage.textContent = `Error adding event: ${error.message}`;
+                    adminMessage.className = "mt-4 p-3 bg-red-100 text-red-700 rounded-lg text-center font-medium";
+                }
+            });
+        }
+
+        // --- Execution Logic ---
+        window.addEventListener('load', () => {
+            if (Object.keys(firebaseConfig).length > 0) {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                
+                authenticate();
+            } else {
+                document.getElementById('admin-message').textContent = "Database configuration missing. Management tool disabled.";
+                document.getElementById('admin-message').className = "mt-4 p-3 bg-red-100 text-red-700 rounded-lg text-center font-medium";
+                document.getElementById('add-event-btn').disabled = true;
+            }
+        });
+    </script>
+</body>
+</html>
