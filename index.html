@@ -55,7 +55,7 @@
             <h2 class="text-3xl font-extrabold text-orange-700 mb-3">Featured Event: Chanukah Party!!!</h2>
             <div class="space-y-2 text-gray-700">
                 <p class="text-lg">Join us this Chanukah for a party!</p>
-                <p>Menorah lighting will be at 5:00 PM on Thursday, December 18th, followed by classic Chanukah activites from 5:30 to 7:00 PM.</p>
+                <p>Menorah lighting will be at 5:00 PM on December 18th, followed by classic Chanukah activites from 5:30 to 7:00 PM.</p>
             </div>
         </section>
 
@@ -156,148 +156,152 @@
         const eventsCollectionPath = `/artifacts/${appId}/public/data/events`;
         let db;
         let auth;
-        
-        // --- ADMIN PANEL UI LOGIC ---
-        document.getElementById('toggle-admin-btn').addEventListener('click', () => {
-            document.getElementById('event-admin-panel').classList.toggle('hidden');
-        });
 
-        if (Object.keys(firebaseConfig).length > 0) {
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-
-            // 1. Authentication
-            async function authenticate() {
-                try {
-                    if (initialAuthToken) {
-                        await signInWithCustomToken(auth, initialAuthToken);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-                    console.log("Firebase authenticated successfully.");
-                    // After successful authentication, set up the 'Add Event' button
-                    setupAddEventListener();
-                } catch (error) {
-                    console.error("Firebase authentication failed:", error);
+        // 1. Authentication
+        async function authenticate() {
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
                 }
+                console.log("Firebase authenticated successfully.");
+                setupAddEventListener();
+            } catch (error) {
+                console.error("Firebase authentication failed:", error);
             }
+        }
+        
+        // 2. Real-time Event Listener (Fetches and displays events)
+        function setupRealtimeEvents() {
+            const eventListEl = document.getElementById('upcoming-events-list');
+            const loadingStatusEl = document.getElementById('event-loading-status');
             
-            // 2. Real-time Event Listener (Fetches and displays events)
-            function setupRealtimeEvents() {
-                const eventListEl = document.getElementById('upcoming-events-list');
-                const loadingStatusEl = document.getElementById('event-loading-status');
-                
-                loadingStatusEl.classList.remove('hidden');
+            loadingStatusEl.classList.remove('hidden');
 
-                // Get the current date and format it for comparison (ISO format)
-                const now = new Date();
-                now.setHours(0, 0, 0, 0);
-                const todayISO = now.toISOString();
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+            const todayISO = now.toISOString();
 
-                // Query: Get events where 'date' is today or in the future
-                const eventsQuery = query(
-                    collection(db, eventsCollectionPath),
-                    where('date', '>=', todayISO)
-                );
+            const eventsQuery = query(
+                collection(db, eventsCollectionPath),
+                where('date', '>=', todayISO)
+            );
 
-                onSnapshot(eventsQuery, (snapshot) => {
-                    const events = [];
-                    snapshot.forEach((doc) => {
-                        const data = doc.data();
-                        const eventDate = new Date(data.date);
-                        
-                        // Client-side filtering ensures events are strictly in the future (or start of today)
-                        if (eventDate >= now) {
-                            events.push({ id: doc.id, ...data, dateObj: eventDate });
-                        }
+            onSnapshot(eventsQuery, (snapshot) => {
+                const events = [];
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const eventDate = new Date(data.date);
+                    
+                    if (eventDate >= now) {
+                        events.push({ id: doc.id, ...data, dateObj: eventDate });
+                    }
+                });
+
+                events.sort((a, b) => a.dateObj - b.dateObj);
+
+                loadingStatusEl.classList.add('hidden');
+
+                if (events.length === 0) {
+                    eventListEl.innerHTML = '<li class="text-center text-gray-500 italic p-4 bg-gray-100 rounded-lg">Check back soon for new events!</li>';
+                    return;
+                }
+
+                eventListEl.innerHTML = events.map(event => {
+                    const dateString = event.dateObj.toLocaleDateString('en-US', {
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    const dayOfWeek = event.dateObj.toLocaleDateString('en-US', {
+                        weekday: 'long'
                     });
 
-                    // Sort events chronologically (A to B)
-                    events.sort((a, b) => a.dateObj - b.dateObj);
+                    return `
+                        <li class="p-4 bg-white rounded-lg shadow-md border-l-4 border-indigo-500 flex flex-col sm:flex-row justify-between items-start sm:items-center transition duration-300 hover:bg-indigo-50 hover:shadow-lg">
+                            <span class="font-semibold text-lg text-indigo-900">${event.name}</span>
+                            <span class="text-sm text-indigo-600 mt-1 sm:mt-0">${dayOfWeek}, ${dateString}</span>
+                        </li>
+                    `;
+                }).join('');
 
-                    loadingStatusEl.classList.add('hidden');
-
-                    if (events.length === 0) {
-                        eventListEl.innerHTML = '<li class="text-center text-gray-500 italic p-4 bg-gray-100 rounded-lg">Check back soon for new events!</li>';
-                        return;
-                    }
-
-                    // Render the list
-                    eventListEl.innerHTML = events.map(event => {
-                        const dateString = event.dateObj.toLocaleDateString('en-US', {
-                            month: 'long',
-                            day: 'numeric'
-                        });
-                        const dayOfWeek = event.dateObj.toLocaleDateString('en-US', {
-                            weekday: 'long'
-                        });
-
-                        return `
-                            <li class="p-4 bg-white rounded-lg shadow-md border-l-4 border-indigo-500 flex flex-col sm:flex-row justify-between items-start sm:items-center transition duration-300 hover:bg-indigo-50 hover:shadow-lg">
-                                <span class="font-semibold text-lg text-indigo-900">${event.name}</span>
-                                <span class="text-sm text-indigo-600 mt-1 sm:mt-0">${dayOfWeek}, ${dateString}</span>
-                            </li>
-                        `;
-                    }).join('');
-
-                    console.log("Events updated successfully.");
-                }, (error) => {
-                    console.error("Error fetching real-time events:", error);
-                    eventListEl.innerHTML = '<li class="text-center text-red-500 italic p-4 bg-red-50 rounded-lg">Failed to load events. Please check connection.</li>';
-                    loadingStatusEl.classList.add('hidden');
-                });
-            }
-
-            // 3. Function to Add Event to Database
-            function setupAddEventListener() {
-                const addButton = document.getElementById('add-event-btn');
-                const eventNameInput = document.getElementById('event-name');
-                const eventDateInput = document.getElementById('event-date');
-                const adminMessage = document.getElementById('admin-message');
-
-                addButton.addEventListener('click', async () => {
-                    const name = eventNameInput.value.trim();
-                    const dateLocal = eventDateInput.value; // e.g., "2025-11-15T19:00"
-
-                    if (!name || !dateLocal) {
-                        adminMessage.textContent = "Error: Please enter both event name and date/time.";
-                        adminMessage.className = "mt-4 text-sm font-medium text-red-600";
-                        return;
-                    }
-
-                    try {
-                        // Convert local datetime input to an ISO string ending in 'Z' (UTC)
-                        const dateISO = new Date(dateLocal).toISOString();
-                        
-                        await addDoc(collection(db, eventsCollectionPath), {
-                            name: name,
-                            date: dateISO // This is the field that drives the sorting and filtering
-                        });
-
-                        adminMessage.textContent = `Success! Added event: "${name}" for ${dateLocal}.`;
-                        adminMessage.className = "mt-4 text-sm font-medium text-green-600";
-
-                        // Clear the form after submission
-                        eventNameInput.value = '';
-                        eventDateInput.value = '';
-
-                    } catch (error) {
-                        console.error("Error adding document: ", error);
-                        adminMessage.textContent = `Error adding event: ${error.message}`;
-                        adminMessage.className = "mt-4 text-sm font-medium text-red-600";
-                    }
-                });
-            }
-            
-            // Start the application
-            authenticate().then(setupRealtimeEvents);
-
-        } else {
-            document.getElementById('upcoming-events-list').innerHTML = '<li class="text-center text-red-500 italic p-4 bg-red-50 rounded-lg">Database configuration missing. Dynamic updates disabled.</li>';
-            document.getElementById('event-loading-status').classList.add('hidden');
-            document.getElementById('toggle-admin-btn').disabled = true;
+                console.log("Events updated successfully.");
+            }, (error) => {
+                console.error("Error fetching real-time events:", error);
+                eventListEl.innerHTML = '<li class="text-center text-red-500 italic p-4 bg-red-50 rounded-lg">Failed to load events. Please check connection.</li>';
+                loadingStatusEl.classList.add('hidden');
+            });
         }
+
+        // 3. Function to Add Event to Database
+        function setupAddEventListener() {
+            const addButton = document.getElementById('add-event-btn');
+            const eventNameInput = document.getElementById('event-name');
+            const eventDateInput = document.getElementById('event-date');
+            const adminMessage = document.getElementById('admin-message');
+
+            addButton.addEventListener('click', async () => {
+                const name = eventNameInput.value.trim();
+                const dateLocal = eventDateInput.value;
+
+                if (!name || !dateLocal) {
+                    adminMessage.textContent = "Error: Please enter both event name and date/time.";
+                    adminMessage.className = "mt-4 text-sm font-medium text-red-600";
+                    return;
+                }
+
+                try {
+                    const dateISO = new Date(dateLocal).toISOString();
+                    
+                    await addDoc(collection(db, eventsCollectionPath), {
+                        name: name,
+                        date: dateISO
+                    });
+
+                    adminMessage.textContent = `Success! Added event: "${name}" for ${dateLocal}.`;
+                    adminMessage.className = "mt-4 text-sm font-medium text-green-600";
+
+                    eventNameInput.value = '';
+                    eventDateInput.value = '';
+
+                } catch (error) {
+                    console.error("Error adding document: ", error);
+                    adminMessage.textContent = `Error adding event: ${error.message}`;
+                    adminMessage.className = "mt-4 text-sm font-medium text-red-600";
+                }
+            });
+        }
+
+        // --- Execution Logic (Wrapped for stability) ---
+        window.addEventListener('load', () => {
+            
+            // UI Logic for Toggling Admin Panel
+            const toggleBtn = document.getElementById('toggle-admin-btn');
+            const adminPanel = document.getElementById('event-admin-panel');
+
+            if (toggleBtn && adminPanel) {
+                toggleBtn.addEventListener('click', () => {
+                    adminPanel.classList.toggle('hidden');
+                });
+            }
+
+            // Start Firebase setup only if configuration exists
+            if (Object.keys(firebaseConfig).length > 0) {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                
+                authenticate().then(setupRealtimeEvents);
+
+            } else {
+                document.getElementById('upcoming-events-list').innerHTML = '<li class="text-center text-red-500 italic p-4 bg-red-50 rounded-lg">Database configuration missing. Dynamic updates disabled.</li>';
+                document.getElementById('event-loading-status').classList.add('hidden');
+                if (toggleBtn) {
+                    toggleBtn.disabled = true;
+                    toggleBtn.textContent += ' (DB disabled)';
+                }
+            }
+        });
     </script>
 </body>
 </html>
