@@ -1,38 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>The Power of Shabbat - Chabad SOIS</title>
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Power of Shabbat - Chabad SOIS</title>
+    <!-- Load Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font and base styling */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7; /* Light background for the whole page */
+        }
+    </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col">
 
-<header>
-  <h1>Chabad SOIS</h1>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="about.html">About</a>
-    <a href="events.html">Events</a>
-    <a href="learning.html">Learning Resources</a>
-    <a href="contact.html">Contact</a>
-    <a href="donate.html">Donate</a>
-  </nav>
-</header>
+    <!-- Header Section (Consistent Theme) -->
+    <header class="bg-indigo-700 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center">
+            <h1 class="text-3xl font-bold mb-3 md:mb-0">Chabad SOIS</h1>
+            <nav class="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm font-medium">
+                <a href="index.html" class="hover:text-indigo-200 transition duration-300">Home</a>
+                <a href="about.html" class="hover:text-indigo-200 transition duration-300">About</a>
+                <a href="events.html" class="hover:text-indigo-200 transition duration-300">Events</a>
+                <a href="learning.html" class="hover:text-indigo-200 transition duration-300">Learning Resources</a>
+                <a href="contact.html" class="hover:text-indigo-200 transition duration-300">Contact</a>
+                <a href="donate.html" class="hover:text-indigo-200 transition duration-300">Donate</a>
+                <a href="extras.html" class="hover:text-indigo-200 transition duration-300">Fun Extras</a>
+            </nav>
+        </div>
+    </header>
 
-<main>
-  <section class="article-content" style="padding: 2rem; max-width: 800px; margin: auto; color: #002366;">
-    <h2>The Power of Shabbat</h2>
-    <p>Shabbat, the weekly day of rest, is a powerful opportunity to step away from the hustle and bustle of daily life and connect with family, friends, and spirituality. It is a time to reflect, recharge, and appreciate the blessings we often overlook during the week.</p>
-    <p>Learn more at <li><a href="article4.html">The 39 Melachot.</a></li></p>
-    <p>Join us every Friday night at Chabad SOIS for a warm and welcoming Shabbat dinner. Experience the beauty of tradition, prayer, and good food with community members of all backgrounds.</p>
-  </section>
-</main>
+    <!-- Main Content Area -->
+    <main class="flex-grow container mx-auto p-4 md:p-8">
+        
+        <section class="article-content bg-white p-6 md:p-10 rounded-xl shadow-2xl max-w-4xl mx-auto border-t-8 border-orange-500">
+            
+            <h2 class="text-4xl font-extrabold text-indigo-800 mb-6 border-b pb-2">The Power of Shabbat</h2>
+            
+            <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+                Shabbat, the weekly day of rest, is a powerful opportunity to step away from the hustle and bustle of daily life and connect with family, friends, and spirituality. It is a time to reflect, recharge, and appreciate the blessings we often overlook during the week.
+            </p>
+            
+            <div class="p-4 bg-indigo-50 rounded-lg border border-indigo-200 mb-6">
+                <p class="text-md text-gray-700">
+                    Learn more at 
+                    <!-- The list item was changed to be inline link styling -->
+                    <a href="article4.html" class="text-orange-600 font-semibold hover:text-orange-800 underline transition duration-300">The 39 Melachot.</a>
+                </p>
+            </div>
+            
+            <p class="text-lg text-gray-700 leading-relaxed">
+                Join us every Friday night at Chabad SOIS for a warm and welcoming Shabbat dinner. Experience the beauty of tradition, prayer, and good food with community members of all backgrounds.
+            </p>
 
-<footer>
-  <p>3151 Stoney Street, Mohegan Lake, NY 10547</p>
-  <p><a href="extras.html">Fun Extras</a></p>
-</footer>
+        </section>
+    </main>
+
+    <!-- Footer Section (Consistent Theme) -->
+    <footer class="bg-indigo-900 text-white mt-8 p-6 text-center">
+        <div class="container mx-auto space-y-1">
+            <p>3151 Stoney Street, Mohegan Lake, NY 10547</p>
+            <p class="text-indigo-300 hover:text-white transition duration-300"><a href="extras.html">Fun Extras</a></p>
+        </div>
+    </footer>
 
 </body>
 </html>
