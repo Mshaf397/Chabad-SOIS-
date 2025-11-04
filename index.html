@@ -33,6 +33,23 @@
 
     <main class="flex-grow container mx-auto p-4 md:p-8 space-y-8">
 
+        <!-- Temporary Admin Panel to add events to the database -->
+        <section id="event-admin-panel" class="bg-red-50 p-6 rounded-xl shadow-xl border-t-4 border-red-500 hidden">
+            <h2 class="text-2xl font-bold text-red-700 mb-4">Admin Event Manager (For Testing Only)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <div class="md:col-span-2">
+                    <label for="event-name" class="block text-sm font-medium text-gray-700 mb-1">Event Name</label>
+                    <input type="text" id="event-name" placeholder="E.g., Purim Feast" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="event-date" class="block text-sm font-medium text-gray-700 mb-1">Gregorian Date & Time</label>
+                    <input type="datetime-local" id="event-date" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <button id="add-event-btn" class="w-full bg-indigo-600 text-white p-2 rounded-lg font-semibold hover:bg-indigo-700 transition duration-300 shadow-md">Add Event to DB</button>
+            </div>
+            <div id="admin-message" class="mt-4 text-sm font-medium"></div>
+        </section>
+
         <!-- Featured Event -->
         <section class="featured-event bg-orange-100 p-6 md:p-10 rounded-xl shadow-lg border-l-4 border-orange-500">
             <h2 class="text-3xl font-extrabold text-orange-700 mb-3">Featured Event: Chanukah Party!!!</h2>
@@ -50,7 +67,7 @@
                     <!-- Events will be dynamically injected here -->
                     <li class="text-center text-gray-500 italic p-4">Loading events...</li>
                 </ul>
-                <div id="event-loading-status" class="text-center text-sm mt-4 hidden">
+                <div id="event-loading-status" class="text-center text-sm mt-4">
                     <p class="text-indigo-500">Connecting to real-time updates...</p>
                 </div>
             </section>
@@ -85,7 +102,7 @@
             </div>
         </section>
 
-        <!-- Today in Jewish History (Kept the original script structure for this section) -->
+        <!-- Today in Jewish History -->
         <section id="today-in-jewish-history" class="bg-yellow-50 p-6 rounded-xl shadow-md border-l-4 border-yellow-500">
             <h2 class="text-2xl font-bold text-yellow-800 mb-2">Today in Jewish History</h2>
             <div id="tijh-date" class="text-xl font-semibold text-gray-700 mb-3"></div>
@@ -94,34 +111,21 @@
             <script>
                 // This script handles the "Today in Jewish History" functionality.
                 (function(){
-                    const DATA_URL = "/jewish-history.json"; // adjust path if needed
                     const now = new Date();
 
                     // Hebrew date logic
-                    let heb = "Hebrew date unavailable", hebKey = null;
+                    let heb = "Hebrew date unavailable";
                     try {
                         // Use Hebrew calendar to determine date
                         const fmt = new Intl.DateTimeFormat("en-u-ca-hebrew",{day:"numeric",month:"long",year:"numeric"});
                         heb = fmt.format(now); // e.g. "11 Elul 5785"
-                        const parts = heb.split(" ");
-                        if (parts.length >= 2) hebKey = parts[1] + " " + parts[0]; // "Elul 11"
                     } catch(e){}
 
                     document.getElementById("tijh-date").textContent = heb;
 
-                    fetch(DATA_URL)
-                        .then(r => r.json())
-                        .then(EVENTS => {
-                            const items = hebKey && EVENTS[hebKey] ? EVENTS[hebKey] : [];
-                            const list = document.getElementById("tijh-events");
-                            list.innerHTML = items.length
-                                ? items.map(e=>`<li class="hover:text-yellow-900 transition duration-200"><b>${e.title}</b>: ${e.desc}</li>`).join("")
-                                : "<li class='italic'>No recorded events for this Hebrew date.</li>";
-                        })
-                        .catch(err => {
-                            console.error(err);
-                            document.getElementById("tijh-events").innerHTML = "<li class='text-red-500'>Could not load history data.</li>";
-                        });
+                    const list = document.getElementById("tijh-events");
+                    // Data is not available, so we display a static message instead of attempting to fetch from an invalid URL
+                    list.innerHTML = "<li class='italic'>Historical data source is currently unavailable.</li>";
                 })();
             </script>
         </section>
@@ -132,24 +136,36 @@
         <div class="container mx-auto">
             <p class="mb-2">3151 Stoney Street, Mohegan Lake, NY 10547</p>
             <p class="text-indigo-300 hover:text-white transition duration-300"><a href="extras.html">Fun Extras</a></p>
+            <p class="text-xs text-indigo-400 mt-2">
+                <button id="toggle-admin-btn" class="underline hover:text-white transition duration-200">Toggle Event Manager</button>
+            </p>
         </div>
     </footer>
 
-    <!-- Firebase SDK Imports (for real-time events) -->
+    <!-- Firebase SDK Imports (for real-time events and adding events) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, query, onSnapshot, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, query, onSnapshot, where, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Global variables provided by the environment
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-chabad-app';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        const eventsCollectionPath = `/artifacts/${appId}/public/data/events`;
+        let db;
+        let auth;
+        
+        // --- ADMIN PANEL UI LOGIC ---
+        document.getElementById('toggle-admin-btn').addEventListener('click', () => {
+            document.getElementById('event-admin-panel').classList.toggle('hidden');
+        });
 
         if (Object.keys(firebaseConfig).length > 0) {
             const app = initializeApp(firebaseConfig);
-            const db = getFirestore(app);
-            const auth = getAuth(app);
+            db = getFirestore(app);
+            auth = getAuth(app);
 
             // 1. Authentication
             async function authenticate() {
@@ -160,27 +176,26 @@
                         await signInAnonymously(auth);
                     }
                     console.log("Firebase authenticated successfully.");
+                    // After successful authentication, set up the 'Add Event' button
+                    setupAddEventListener();
                 } catch (error) {
                     console.error("Firebase authentication failed:", error);
                 }
             }
-
-            // 2. Real-time Event Listener
+            
+            // 2. Real-time Event Listener (Fetches and displays events)
             function setupRealtimeEvents() {
                 const eventListEl = document.getElementById('upcoming-events-list');
                 const loadingStatusEl = document.getElementById('event-loading-status');
-                const eventsCollectionPath = `/artifacts/${appId}/public/data/events`;
                 
                 loadingStatusEl.classList.remove('hidden');
 
                 // Get the current date and format it for comparison (ISO format)
                 const now = new Date();
-                // Set time to the very start of today to ensure today's events are not missed.
                 now.setHours(0, 0, 0, 0);
                 const todayISO = now.toISOString();
 
-                // Create a query to get only future events (events that haven't passed today)
-                // We use greater than or equal to the current date string
+                // Query: Get events where 'date' is today or in the future
                 const eventsQuery = query(
                     collection(db, eventsCollectionPath),
                     where('date', '>=', todayISO)
@@ -190,11 +205,9 @@
                     const events = [];
                     snapshot.forEach((doc) => {
                         const data = doc.data();
-                        // Assuming 'date' field is a Firestore Timestamp or ISO string
                         const eventDate = new Date(data.date);
                         
-                        // Client-side filtering and sorting for safety and display purposes:
-                        // 1. Filter out events that might have slipped through the query (edge cases)
+                        // Client-side filtering ensures events are strictly in the future (or start of today)
                         if (eventDate >= now) {
                             events.push({ id: doc.id, ...data, dateObj: eventDate });
                         }
@@ -236,34 +249,54 @@
                 });
             }
 
+            // 3. Function to Add Event to Database
+            function setupAddEventListener() {
+                const addButton = document.getElementById('add-event-btn');
+                const eventNameInput = document.getElementById('event-name');
+                const eventDateInput = document.getElementById('event-date');
+                const adminMessage = document.getElementById('admin-message');
+
+                addButton.addEventListener('click', async () => {
+                    const name = eventNameInput.value.trim();
+                    const dateLocal = eventDateInput.value; // e.g., "2025-11-15T19:00"
+
+                    if (!name || !dateLocal) {
+                        adminMessage.textContent = "Error: Please enter both event name and date/time.";
+                        adminMessage.className = "mt-4 text-sm font-medium text-red-600";
+                        return;
+                    }
+
+                    try {
+                        // Convert local datetime input to an ISO string ending in 'Z' (UTC)
+                        const dateISO = new Date(dateLocal).toISOString();
+                        
+                        await addDoc(collection(db, eventsCollectionPath), {
+                            name: name,
+                            date: dateISO // This is the field that drives the sorting and filtering
+                        });
+
+                        adminMessage.textContent = `Success! Added event: "${name}" for ${dateLocal}.`;
+                        adminMessage.className = "mt-4 text-sm font-medium text-green-600";
+
+                        // Clear the form after submission
+                        eventNameInput.value = '';
+                        eventDateInput.value = '';
+
+                    } catch (error) {
+                        console.error("Error adding document: ", error);
+                        adminMessage.textContent = `Error adding event: ${error.message}`;
+                        adminMessage.className = "mt-4 text-sm font-medium text-red-600";
+                    }
+                });
+            }
+            
             // Start the application
             authenticate().then(setupRealtimeEvents);
 
-            // Optional: Helper function to add mock data if the database is empty
-            async function addMockEvents() {
-                 try {
-                    const mockEvents = [
-                        { name: "Shabbos Farbrengen", date: "2025-11-09T19:00:00Z" }, // Tomorrow
-                        { name: "Mega Challah Bake", date: "2025-11-16T18:00:00Z" },
-                        { name: "Pizza and Parsha Study", date: "2025-11-23T19:30:00Z" },
-                        { name: "Shabbos Farbrengen", date: "2025-11-30T19:00:00Z" },
-                        // This one should be filtered out because the date is in the past
-                        { name: "Past Event Test", date: "2024-10-01T10:00:00Z" }, 
-                    ];
-                    // You would only run this once to seed the data
-                    // import { addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-                    // for (const event of mockEvents) {
-                    //     await addDoc(collection(db, eventsCollectionPath), event);
-                    // }
-                    // console.log("Mock events added (run this only once!).");
-                 } catch(e) {
-                     console.warn("Could not add mock events:", e);
-                 }
-            }
-            // addMockEvents(); // Uncomment this line if you want to initialize the database with mock data.
-
         } else {
             document.getElementById('upcoming-events-list').innerHTML = '<li class="text-center text-red-500 italic p-4 bg-red-50 rounded-lg">Database configuration missing. Dynamic updates disabled.</li>';
+            document.getElementById('event-loading-status').classList.add('hidden');
+            document.getElementById('toggle-admin-btn').disabled = true;
         }
     </script>
 </body>
