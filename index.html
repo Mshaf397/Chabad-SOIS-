@@ -124,7 +124,7 @@
                     document.getElementById("tijh-date").textContent = heb;
 
                     const list = document.getElementById("tijh-events");
-                    // Data is not available, so we display a static message instead of attempting to fetch from an invalid URL
+                    // Data is not available, so we display a static message
                     list.innerHTML = "<li class='italic'>Historical data source is currently unavailable.</li>";
                 })();
             </script>
@@ -275,7 +275,7 @@
         // --- Execution Logic (Wrapped for stability) ---
         window.addEventListener('load', () => {
             
-            // UI Logic for Toggling Admin Panel
+            // UI Logic for Toggling Admin Panel - This runs every time the page loads.
             const toggleBtn = document.getElementById('toggle-admin-btn');
             const adminPanel = document.getElementById('event-admin-panel');
 
@@ -291,6 +291,7 @@
                 db = getFirestore(app);
                 auth = getAuth(app);
                 
+                // Authenticate and then start listening for events
                 authenticate().then(setupRealtimeEvents);
 
             } else {
